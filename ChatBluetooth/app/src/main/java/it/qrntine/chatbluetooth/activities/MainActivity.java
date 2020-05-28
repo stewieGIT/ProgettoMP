@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         messaggio.data = LocalDate.now().toString();
         messaggio.ora = LocalTime.now().toString();
         messaggio.mittente = "Matteo";
-        messaggio.destinatario = "Franchino";
+        messaggio.destinatario = "Damiano";
 
         //creazione thread
         InserisciThreadDB in = new InserisciThreadDB(db, messaggio);
@@ -55,12 +55,12 @@ public class MainActivity extends AppCompatActivity {
         Thread cancella = new Thread(ca);
         //inserisci.start(); //inserisci
         //cancella.start(); //cancella con destinatario
-        //scarica.start(); //scarica tutti i messaggi
+        scarica.start(); //scarica tutti i messaggi
 
         //esempio codifica messaggio(da eliminare in seguito)
         MetaMessaggio nuovoMex = codificaMessaggio("matteo"); //codifica messaggio
-        System.out.println(new String(nuovoMex.getTesto()).toString()); //stampa messaggio codificato
-        System.out.println(decodificaMessaggio(nuovoMex)); //decodifica il messaggio
+        //System.out.println(new String(nuovoMex.getTesto()).toString()); //stampa messaggio codificato
+        //System.out.println(decodificaMessaggio(nuovoMex)); //decodifica il messaggio
     }
 
 
