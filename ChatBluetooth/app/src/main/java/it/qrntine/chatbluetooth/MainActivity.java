@@ -5,11 +5,12 @@ import androidx.room.Room;
 
 import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -20,6 +21,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 import it.qrntine.chatbluetooth.database.AppDatabase;
+import it.qrntine.chatbluetooth.database.CancellaThreadDB;
+import it.qrntine.chatbluetooth.database.InserisciThreadDB;
+import it.qrntine.chatbluetooth.database.QueryThreadDB;
 import it.qrntine.chatbluetooth.database.Messaggio;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,6 +36,26 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter(); //inizializzazione del BTAdapter
+
+        //esempio di inserimento-cancellazione-query messaggio
+        creaDB(); //crea il DB locale
+        Messaggio messaggio = new Messaggio(); //creo messaggio
+        messaggio.testo = "prova1";
+        messaggio.data = LocalDate.now().toString();
+        messaggio.ora = LocalTime.now().toString();
+        messaggio.mittente = "Matteo";
+        messaggio.destinatario = "Franchino";
+
+        //creazione thread
+        InserisciThreadDB in = new InserisciThreadDB(db, messaggio);
+        Thread inserisci = new Thread(in);
+        QueryThreadDB sc = new QueryThreadDB(db);
+        Thread scarica = new Thread(sc);
+        CancellaThreadDB ca = new CancellaThreadDB(db, messaggio);
+        Thread cancella = new Thread(ca);
+        //inserisci.start(); //inserisci
+        //cancella.start(); //cancella con destinatario
+        //scarica.start(); //scarica tutti i messaggi
 
         //esempio codifica messaggio(da eliminare in seguito)
         MetaMessaggio nuovoMex = codificaMessaggio("matteo"); //codifica messaggio

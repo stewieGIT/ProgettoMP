@@ -4,12 +4,14 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Date;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 @Entity
 public class Messaggio {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     public int mid;
 
     @ColumnInfo(name="Data")
