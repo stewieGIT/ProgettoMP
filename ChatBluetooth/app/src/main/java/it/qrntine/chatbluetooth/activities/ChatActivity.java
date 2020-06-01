@@ -10,14 +10,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
+
 import it.qrntine.chatbluetooth.R;
-import it.qrntine.chatbluetooth.bluetooth.BluetoothSession;
 import it.qrntine.chatbluetooth.database.AppDatabase;
 import it.qrntine.chatbluetooth.database.InserisciThreadDB;
 import it.qrntine.chatbluetooth.database.Messaggio;
@@ -26,21 +32,41 @@ import it.qrntine.chatbluetooth.decorator.DecoratorRecyclerView;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private String mittente = "Matteo"; //proprietario del telefono
-    private String destinatario = "Damiano"; //destinatario
+    private Holder holder;
     private AppDatabase db; //riferimento al db
     private List<Messaggio> messaggi; //lista messaggi relativi alla chat con il destinatario
+
+    private String mittente = "";
 
     @Override
     protected void onCreate(Bundle bundle){
         super.onCreate(bundle);
         setContentView(R.layout.activity_chat);
-        setTitle(destinatario); //il titolo
-        System.out.println("***********RIFERIMENTO CHAT ACTIVITY**********"+BluetoothSession.getInstance().getmBluetoothChatService());
+
         creaDB(); //ritorna il riferimento al db
+
+        Messaggio mex = new Messaggio(); //va messo senno crasha la rv
+        mex.testo = "prova";
+        messaggi = new ArrayList<>();
+        messaggi.add(mex);
+
+        holder = new Holder();
     }
 
-
+    /**
+     * per il menu
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+       /* if(item.getItemId() == R.id.itRicerca){
+            //ricerca keyword
+        }else{
+            return super.onContextItemSelected(item);
+        }*/
+        return true;
+    }
 
     /**
      * crea istanza di DB con Room
@@ -50,5 +76,94 @@ public class ChatActivity extends AppCompatActivity {
                 AppDatabase.class, "messaggi").build();
     }
 
+    class Holder implements View.OnClickListener{
 
+        private RecyclerView rvChat;
+        private EditText etInserisciMessaggio;
+        private Button btnInviaMessaggio;
+
+        public Holder(){
+            etInserisciMessaggio = findViewById(R.id.etInserisciMessaggio);
+            btnInviaMessaggio = findViewById(R.id.btnInviaMessaggio);
+            btnInviaMessaggio.setOnClickListener(this);
+
+            rvChat = findViewById(R.id.rvChat);
+            rvChat.setAdapter(new ChatBluetoothAdapter(messaggi));
+            LinearLayoutManager lm = new LinearLayoutManager(ChatActivity.this);
+            rvChat.setLayoutManager(lm);
+
+            DecoratorRecyclerView decorator = new DecoratorRecyclerView(15); //decorator per spaziare gli oggetti
+            rvChat.addItemDecoration(decorator);
+        }
+
+        /**
+         * nel caso del bottone inviaMessaggio provvederà a creare il messaggio, visualizzarlo nella RV e salvarlo nel DB
+         * @param v la view che ha ricevuto l'evento
+         */
+        @Override
+        public void onClick(View v) {
+            if(v.getId() == R.id.btnInviaMessaggio){
+                if(!etInserisciMessaggio.getText().toString().equals("")){
+                    //messaggio
+                }
+            }
+        }
+    }
+
+    /*
+    /*adapter per il recyclerview*/
+    class ChatBluetoothAdapter extends RecyclerView.Adapter<ChatBluetoothAdapter.ChatHolder>{
+
+        private List<Messaggio> dati;
+
+        public ChatBluetoothAdapter(List<Messaggio> dati){
+            this.dati = dati;
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + dati);
+        }
+
+        @NonNull
+        @Override
+        public ChatBluetoothAdapter.ChatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            RelativeLayout rl = (RelativeLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_chat,
+                    parent, false);
+            return new ChatHolder(rl);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ChatBluetoothAdapter.ChatHolder holder, int position) {
+            holder.tvMessaggio.setText(dati.get(position).testo);
+            holder.tvData.setText(dati.get(position).ora);
+            //serve per fare il display dei messaggi
+            /*if(dati.get(position).mittente.equals(mittente)){
+                holder.rlChat.setGravity(Gravity.RIGHT); //se sei il mittente i messaggi sono visualizzati a destra
+                System.out.println("DESTRA");
+            }
+            else{
+                holder.rlChat.setGravity(Gravity.LEFT); //altrimenti a sinistra
+                System.out.println("SINISTRA");
+            }*/
+        }
+
+        @Override
+        public int getItemCount() {
+            return dati.size();
+        }
+
+        class ChatHolder extends RecyclerView.ViewHolder{
+
+            private RelativeLayout rlChat;
+            private CardView cvChat;
+            private TextView tvMessaggio;
+            private TextView tvData;
+
+            public ChatHolder(@NonNull View itemView) {
+                super(itemView);
+
+                rlChat = itemView.findViewById(R.id.rlChat);
+                cvChat = itemView.findViewById(R.id.cvChat);
+                tvMessaggio = cvChat.findViewById(R.id.tvMessaggio);
+                tvData = cvChat.findViewById(R.id.tvData);
+            }
+        }
+    }
 }
