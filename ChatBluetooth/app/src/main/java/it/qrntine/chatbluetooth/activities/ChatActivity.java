@@ -26,12 +26,17 @@ import androidx.room.Room;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import it.qrntine.chatbluetooth.R;
 import it.qrntine.chatbluetooth.bluetooth.BluetoothChatService;
 import it.qrntine.chatbluetooth.bluetooth.BluetoothSession;
 import it.qrntine.chatbluetooth.bluetooth.MessageConstants;
+import it.qrntine.chatbluetooth.codifica.CodificaAES;
+import it.qrntine.chatbluetooth.codifica.MetaMessaggio;
 import it.qrntine.chatbluetooth.database.AppDatabase;
 import it.qrntine.chatbluetooth.database.InserisciThreadDB;
 import it.qrntine.chatbluetooth.database.Messaggio;
@@ -39,6 +44,7 @@ import it.qrntine.chatbluetooth.database.QueryThreadDB;
 import it.qrntine.chatbluetooth.decorator.DecoratorRecyclerView;
 
 public class ChatActivity extends AppCompatActivity {
+    private CodificaAES codifica;
     private Handler mHandler;
     private Holder holder;
     private AppDatabase db; //riferimento al db
@@ -49,6 +55,11 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle bundle){
         super.onCreate(bundle);
         setContentView(R.layout.activity_chat);
+
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"), Locale.ITALY);
+        final String data = calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH) + "/" +
+                calendar.get(Calendar.YEAR);
+        final String time = calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE);
 
         creaDB(); //ritorna il riferimento al db
 
@@ -73,6 +84,7 @@ public class ChatActivity extends AppCompatActivity {
                 InserisciThreadDB in;
                 Thread inserisci;
                 Messaggio messaggio;
+                MetaMessaggio meta;
                 String m;
                 byte[] buf;
 
@@ -84,9 +96,8 @@ public class ChatActivity extends AppCompatActivity {
                         messaggio.testo = m;
                         messaggio.mittente = session.getmBluetoothChatService().getmAdapter().getAddress();
                         messaggio.destinatario = session.getDevice().getAddress();
-                        messaggio.data = LocalDate.now().toString();
-                        messaggio.ora = String.valueOf(LocalTime.now().getHour()) +
-                                ":" + String.valueOf(LocalTime.now().getMinute());
+                        messaggio.data = data;
+                        messaggio.ora = time;
                         messaggi.add(messaggio);
                         in = new InserisciThreadDB(db, messaggio);
                         inserisci = new Thread(in);
@@ -100,9 +111,8 @@ public class ChatActivity extends AppCompatActivity {
                         messaggio.testo = m;
                         messaggio.mittente = session.getDevice().getAddress();
                         messaggio.destinatario = session.getmBluetoothChatService().getmAdapter().getAddress();
-                        messaggio.data = LocalDate.now().toString();
-                        messaggio.ora = String.valueOf(LocalTime.now().getHour()) +
-                                ":" + String.valueOf(LocalTime.now().getMinute());
+                        messaggio.data = data;
+                        messaggio.ora = time;
                         messaggi.add(messaggio);
                         in = new InserisciThreadDB(db, messaggio);
                         inserisci = new Thread(in);
@@ -110,12 +120,45 @@ public class ChatActivity extends AppCompatActivity {
                         holder.rvChat.getAdapter().notifyDataSetChanged();
                         break;
                     case MessageConstants.MESSAGE_TOAST: break;
+                    case MessageConstants.MESSAGE_OBJECT_WRITE:
+                        meta = (MetaMessaggio) msg.obj;
+                        messaggio = new Messaggio();
+                        messaggio.testo = codifica.decodificaMessaggio(meta);
+                        messaggio.mittente = session.getmBluetoothChatService().getmAdapter().getAddress();
+                        messaggio.destinatario = session.getDevice().getAddress();
+                        messaggio.data = data;
+                        messaggio.ora = time;
+                        messaggi.add(messaggio);
+                        in = new InserisciThreadDB(db, messaggio);
+                        inserisci = new Thread(in);
+                        inserisci.start();
+                        holder.rvChat.getAdapter().notifyDataSetChanged();
+                        break;
+                    case MessageConstants.MESSAGE_OBJECT_READ:
+                        meta = (MetaMessaggio) msg.obj;
+                        messaggio = new Messaggio();
+                        messaggio.testo = codifica.decodificaMessaggio(meta);
+                        messaggio.mittente = session.getDevice().getAddress();
+                        messaggio.destinatario = session.getmBluetoothChatService().getmAdapter().getAddress();
+                        messaggio.data = data;
+                        messaggio.ora = time;
+                        messaggi.add(messaggio);
+                        in = new InserisciThreadDB(db, messaggio);
+                        inserisci = new Thread(in);
+                        inserisci.start();
+                        holder.rvChat.getAdapter().notifyDataSetChanged();
+                        break;
                 }
                 return true;
             }
         } ) ;
+    }
 
-        session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(session.getmBluetoothChatService().getmConnectedThread() != null)
+            session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
     }
 
     /**
@@ -145,12 +188,14 @@ public class ChatActivity extends AppCompatActivity {
 
         private RecyclerView rvChat;
         private EditText etInserisciMessaggio;
-        private Button btnInviaMessaggio;
+        private Button btnInviaMessaggio, btnCSend;
 
         public Holder(){
             etInserisciMessaggio = findViewById(R.id.etInserisciMessaggio);
             btnInviaMessaggio = findViewById(R.id.btnInviaMessaggio);
+            btnCSend = findViewById(R.id.btnCSend);
             btnInviaMessaggio.setOnClickListener(this);
+            btnCSend.setOnClickListener(this);
 
             rvChat = findViewById(R.id.rvChat);
             rvChat.setAdapter(new ChatBluetoothAdapter(messaggi));
@@ -171,6 +216,15 @@ public class ChatActivity extends AppCompatActivity {
                 if(!etInserisciMessaggio.getText().toString().equals("")){
                     session.getmBluetoothChatService().write(etInserisciMessaggio.getText().toString().getBytes());
                     etInserisciMessaggio.setText("");
+                }
+            }
+            if(v.getId() == R.id.btnCSend){
+                if(!etInserisciMessaggio.getText().toString().equals("")){
+                    codifica = new CodificaAES();
+                    String messaggio = etInserisciMessaggio.getText().toString();
+
+                    MetaMessaggio metaMessaggio = codifica.codificaMessaggio(messaggio);
+                    session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
                 }
             }
         }

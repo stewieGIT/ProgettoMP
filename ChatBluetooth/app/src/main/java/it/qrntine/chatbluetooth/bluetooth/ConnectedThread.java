@@ -10,8 +10,12 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.UUID;
+
+import it.qrntine.chatbluetooth.codifica.MetaMessaggio;
 
 /**
  * This thread runs during a connection with a remote device.
@@ -77,6 +81,16 @@ import java.util.UUID;
                 // Read from the InputStream
                 bytes = mmInStream.read(buffer);
 
+//                try{
+//                    ObjectInputStream ois = new ObjectInputStream(mmInStream);
+//                    Object obj = ois.readObject();
+//                    if(obj != null){
+//                        mHandler.obtainMessage(MessageConstants.MESSAGE_OBJECT_READ, obj).sendToTarget();
+//                    }
+//                }catch(ClassNotFoundException e){
+//                    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>ERRORE READOBJECT");
+//                }
+
                 // Send the obtained bytes to the UI Activity
                 mHandler.obtainMessage(MessageConstants.MESSAGE_READ, bytes, -1, buffer)
                         .sendToTarget();
@@ -116,6 +130,21 @@ import java.util.UUID;
             writeErrorMsg.setData(bundle);
             mHandler.sendMessage(writeErrorMsg);
 
+        }
+    }
+
+    /**
+     * scrivi il metaMessaggio
+     * @param msg
+     */
+    public void writeObject(Object msg){
+        try{
+            ObjectOutputStream oos = new ObjectOutputStream(mmOutStream);
+            oos.writeObject(msg);
+            oos.close();
+            mHandler.obtainMessage(MessageConstants.MESSAGE_OBJECT_WRITE, msg).sendToTarget();
+        }catch(IOException e){
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ERRORE WRITEOBJECT");
         }
     }
 

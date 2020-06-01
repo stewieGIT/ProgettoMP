@@ -87,6 +87,7 @@ public class AcceptThread extends Thread {
                     switch (mBluetoothChatService.getmState()) {
                         case STATE_LISTEN:
                         case STATE_CONNECTING:
+                            BluetoothSession.getInstance().setDevice(socket.getRemoteDevice());
                             // Situation normal. Start the connected thread.
                             mBluetoothChatService.connected(socket, socket.getRemoteDevice(),
                                     mSocketType);

@@ -31,7 +31,7 @@ public class CodificaAES {
             Cipher cifra = Cipher.getInstance("AES/CBC/PKCS5PADDING"); //crea chiave di cifratura
             cifra.init(Cipher.ENCRYPT_MODE, risultato.getChiave());
             risultato.setTesto(cifra.doFinal(m)); //cifra messaggio e aggiungi testo
-            risultato.setIvp(new IvParameterSpec(cifra.getIV())); //aggiungi il IV
+            risultato.setIvp(cifra.getIV()); //aggiungi il IV
 
             return risultato;
 
@@ -56,7 +56,7 @@ public class CodificaAES {
 
         try{
             Cipher decifra = Cipher.getInstance("AES/CBC/PKCS5PADDING"); //crea la chiave di decifratura
-            decifra.init(Cipher.DECRYPT_MODE, messaggio.getChiave(), messaggio.getIvp());
+            decifra.init(Cipher.DECRYPT_MODE, messaggio.getChiave(), new IvParameterSpec(messaggio.getIvp()));
             byte[] messaggioDecifrato = decifra.doFinal(messaggio.getTesto()); //decifra messaggio
             risultato = new String(messaggioDecifrato).toString();
 

@@ -8,7 +8,9 @@ import javax.crypto.spec.IvParameterSpec;
 /*La classe MetaMessaggio contiene le informazioni necessarie per la codifica e decodifica del messaggio*/
 public class MetaMessaggio implements Serializable {
 
-    private IvParameterSpec ivp; //Vettore di inizializzazione necessario per la decifratura
+    static final long serialVersionUID = 1234L;
+
+    private byte[] ivp; //Vettore di inizializzazione necessario per la decifratura
     private SecretKey chiave; //Chiave segreta
     private byte[] testo; //testo cifrato
 
@@ -18,7 +20,7 @@ public class MetaMessaggio implements Serializable {
         this.chiave = chiave;
     }
 
-    public void setIvp(IvParameterSpec ivp) {
+    public void setIvp(byte[] ivp) {
         this.ivp = ivp;
     }
 
@@ -30,7 +32,7 @@ public class MetaMessaggio implements Serializable {
         return chiave;
     }
 
-    public IvParameterSpec getIvp() {
+    public byte[] getIvp() {
         return ivp;
     }
 
