@@ -1,4 +1,4 @@
-package it.qrntine.chatbluetooth;
+package it.qrntine.chatbluetooth.codifica;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;

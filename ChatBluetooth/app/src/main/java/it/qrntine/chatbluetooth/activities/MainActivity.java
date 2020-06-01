@@ -121,6 +121,11 @@ public class MainActivity extends AppCompatActivity {
                 AppDatabase.class, "messaggi").build();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+    }
 
     class Holder implements View.OnClickListener{
         Button btnSearch, btnChat;
@@ -179,11 +184,6 @@ public class MainActivity extends AppCompatActivity {
                 //prendo l'indirizzo del dispositivo selezionato
                 String devAddress = objDevices.get(position).getAddress();
 
-                Intent intent = new Intent();
-                intent.putExtra(EXTRA_DEVICE_ADDRESS, devAddress);
-
-                setResult(RESULT_OK, intent);
-                finish();
             }
 
             public class ViewHolder extends RecyclerView.ViewHolder {

@@ -2,4 +2,6 @@
     <string name="app_name">ChatBluetooth</string>
     <string name="search">Search</string>
     <string name="chat">Chat</string>
+    <string name="btnSend">Send</string>
+    <string name="hint_message">Insert Message</string>
 </resources>
