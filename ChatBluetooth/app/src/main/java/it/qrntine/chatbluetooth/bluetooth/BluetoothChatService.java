@@ -23,7 +23,7 @@ import java.util.UUID;
  * incoming connections, a thread for connecting with a device, and a
  * thread for performing data transmissions when connected.
  */
-public class BluetoothChatService implements Parcelable {
+public class BluetoothChatService {
     // Debugging
     private static final String TAG = "BluetoothChatService";
 
@@ -39,7 +39,6 @@ public class BluetoothChatService implements Parcelable {
 
     // Member fields
     private final BluetoothAdapter mAdapter;
-
 
     private final Handler mHandler;
     private AcceptThread mSecureAcceptThread;
@@ -357,13 +356,5 @@ public class BluetoothChatService implements Parcelable {
         this.mNewState = mNewState;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
-    }
 }

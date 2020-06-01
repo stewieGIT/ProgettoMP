@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import it.qrntine.chatbluetooth.R;
+import it.qrntine.chatbluetooth.bluetooth.BluetoothSession;
 import it.qrntine.chatbluetooth.database.AppDatabase;
 import it.qrntine.chatbluetooth.database.InserisciThreadDB;
 import it.qrntine.chatbluetooth.database.Messaggio;
@@ -35,7 +36,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(bundle);
         setContentView(R.layout.activity_chat);
         setTitle(destinatario); //il titolo
-
+        System.out.println("***********RIFERIMENTO CHAT ACTIVITY**********"+BluetoothSession.getInstance().getmBluetoothChatService());
         creaDB(); //ritorna il riferimento al db
     }
 

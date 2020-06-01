@@ -29,6 +29,9 @@ public class Messaggio {
     @ColumnInfo(name="Destinatario")
     public String destinatario;
 
+    @ColumnInfo(name="Nome_destinatario")
+    public String nome_destinatario;
+
     public Messaggio(){}
 
 }
