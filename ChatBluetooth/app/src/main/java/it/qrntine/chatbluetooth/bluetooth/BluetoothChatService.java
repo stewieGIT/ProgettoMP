@@ -40,7 +40,8 @@ public class BluetoothChatService {
     // Member fields
     private final BluetoothAdapter mAdapter;
 
-    private final Handler mHandler;
+    private  Handler mHandler;
+
     private AcceptThread mSecureAcceptThread;
     private AcceptThread mInsecureAcceptThread;
     private ConnectThread mConnectThread;
@@ -306,6 +307,10 @@ public class BluetoothChatService {
 
     public Handler getmHandler() {
         return mHandler;
+    }
+
+    public void setmHandler(Handler handler){
+        this.mHandler=handler;
     }
 
     public AcceptThread getmSecureAcceptThread() {

@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                             case BluetoothChatService.STATE_NONE:
                                 showToast("Non connesso...");
                                 break;
+
                         }
                         break;
                 }
@@ -183,6 +184,10 @@ public class MainActivity extends AppCompatActivity {
 
                 //prendo l'indirizzo del dispositivo selezionato
                 String devAddress = objDevices.get(position).getAddress();
+                session.getmBluetoothChatService().connect(objDevices.get(position),true);
+                /*Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                intent.putExtra(EXTRA_DEVICE_ADDRESS, devAddress);
+                startActivity(intent);*/
 
             }
 

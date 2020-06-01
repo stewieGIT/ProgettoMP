@@ -1,6 +1,10 @@
 package it.qrntine.chatbluetooth.activities;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -10,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.qrntine.chatbluetooth.R;
+import it.qrntine.chatbluetooth.bluetooth.BluetoothChatService;
+import it.qrntine.chatbluetooth.bluetooth.BluetoothSession;
+import it.qrntine.chatbluetooth.bluetooth.MessageConstants;
 import it.qrntine.chatbluetooth.database.AppDatabase;
 import it.qrntine.chatbluetooth.database.InserisciThreadDB;
 import it.qrntine.chatbluetooth.database.Messaggio;
@@ -31,11 +39,11 @@ import it.qrntine.chatbluetooth.database.QueryThreadDB;
 import it.qrntine.chatbluetooth.decorator.DecoratorRecyclerView;
 
 public class ChatActivity extends AppCompatActivity {
-
+    private Handler mHandler;
     private Holder holder;
     private AppDatabase db; //riferimento al db
     private List<Messaggio> messaggi; //lista messaggi relativi alla chat con il destinatario
-
+    private BluetoothSession session=BluetoothSession.getInstance();
     private String mittente = "";
 
     @Override
@@ -51,6 +59,8 @@ public class ChatActivity extends AppCompatActivity {
         messaggi.add(mex);
 
         holder = new Holder();
+        Message msg=mHandler.obtainMessage();
+        // DA GESTIRE LA CALLBACK FARE UN NUOVO HANDLER DEDICATO ALLA CHAT NEL BLUETOOTH CHAT SERVICE DA PASSARE AL CONNECTED THREAD
     }
 
     /**
@@ -104,7 +114,7 @@ public class ChatActivity extends AppCompatActivity {
         public void onClick(View v) {
             if(v.getId() == R.id.btnInviaMessaggio){
                 if(!etInserisciMessaggio.getText().toString().equals("")){
-                    //messaggio
+                    session.getmBluetoothChatService().write(etInserisciMessaggio.getText().toString().getBytes());
                 }
             }
         }
@@ -134,7 +144,7 @@ public class ChatActivity extends AppCompatActivity {
             holder.tvMessaggio.setText(dati.get(position).testo);
             holder.tvData.setText(dati.get(position).ora);
             //serve per fare il display dei messaggi
-            /*if(dati.get(position).mittente.equals(mittente)){
+           /* if(dati.get(position).mittente.equals(BluetoothAdapter.getDefaultAdapter().getAddress())){
                 holder.rlChat.setGravity(Gravity.RIGHT); //se sei il mittente i messaggi sono visualizzati a destra
                 System.out.println("DESTRA");
             }
@@ -165,5 +175,8 @@ public class ChatActivity extends AppCompatActivity {
                 tvData = cvChat.findViewById(R.id.tvData);
             }
         }
+    }
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }

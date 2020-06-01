@@ -43,7 +43,7 @@ import java.util.UUID;
     private final Handler mHandler;
 
 
-    public ConnectedThread(BluetoothSocket socket, String socketType, BluetoothAdapter mAdapter, BluetoothChatService mBluetoothChatService, Handler mHandler ) {
+    public ConnectedThread(BluetoothSocket socket, String socketType, BluetoothAdapter mAdapter, BluetoothChatService mBluetoothChatService, Handler mHandler) {
         System.out.println("*********************Connected_Thread ENTRO IN COSTRUTTORE");
         Log.d(TAG, "create ConnectedThread: " + socketType);
         mmSocket = socket;
