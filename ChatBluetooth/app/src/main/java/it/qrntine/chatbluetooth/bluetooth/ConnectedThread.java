@@ -40,7 +40,7 @@ import java.util.UUID;
     private byte[] buffer;
     private final BluetoothAdapter mAdapter;
     private BluetoothChatService mBluetoothChatService;
-    private final Handler mHandler;
+    private Handler mHandler;
 
 
     public ConnectedThread(BluetoothSocket socket, String socketType, BluetoothAdapter mAdapter, BluetoothChatService mBluetoothChatService, Handler mHandler) {
@@ -126,5 +126,13 @@ import java.util.UUID;
         } catch (IOException e) {
             Log.e(TAG, "close() of connect socket failed", e);
         }
+    }
+
+    /**
+     * cambia l'handler
+     * @param mHandler
+     */
+    public void setmHandler(Handler mHandler) {
+        this.mHandler = mHandler;
     }
 }

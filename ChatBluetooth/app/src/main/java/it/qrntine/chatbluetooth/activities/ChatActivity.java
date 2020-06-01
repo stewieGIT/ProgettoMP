@@ -53,14 +53,41 @@ public class ChatActivity extends AppCompatActivity {
 
         creaDB(); //ritorna il riferimento al db
 
-        Messaggio mex = new Messaggio(); //va messo senno crasha la rv
-        mex.testo = "prova";
         messaggi = new ArrayList<>();
-        messaggi.add(mex);
 
         holder = new Holder();
-        Message msg=mHandler.obtainMessage();
+
         // DA GESTIRE LA CALLBACK FARE UN NUOVO HANDLER DEDICATO ALLA CHAT NEL BLUETOOTH CHAT SERVICE DA PASSARE AL CONNECTED THREAD
+        mHandler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                switch (msg.what) {
+                    case MessageConstants.MESSAGE_WRITE:
+                        byte[] buf = (byte[]) msg.obj;
+                        String m = new String(buf);
+                        Messaggio messaggio = new Messaggio();
+                        messaggio.testo = m;
+                        messaggio.mittente = BluetoothAdapter.getDefaultAdapter().getAddress();
+                        messaggi.add(messaggio);
+                        holder.rvChat.getAdapter().notifyDataSetChanged();
+                        break;
+                    case MessageConstants.MESSAGE_READ:
+                        buf = (byte[]) msg.obj;
+                        m = new String(buf, 0 , msg.arg1);
+                        messaggio = new Messaggio();
+                        messaggio.testo = m;
+                        messaggi.add(messaggio);
+                        holder.rvChat.getAdapter().notifyDataSetChanged();
+                        break;
+                    case MessageConstants.MESSAGE_TOAST: break;
+                }
+                return true;
+            }
+        } ) ;
+
+        //session.getmBluetoothChatService().setChatHandler(mHandler);
+        //session.getmBluetoothChatService().connect(session.getDevice(), true);
+        session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
     }
 
     /**
@@ -115,6 +142,7 @@ public class ChatActivity extends AppCompatActivity {
             if(v.getId() == R.id.btnInviaMessaggio){
                 if(!etInserisciMessaggio.getText().toString().equals("")){
                     session.getmBluetoothChatService().write(etInserisciMessaggio.getText().toString().getBytes());
+                    etInserisciMessaggio.setText("");
                 }
             }
         }
@@ -144,19 +172,23 @@ public class ChatActivity extends AppCompatActivity {
             holder.tvMessaggio.setText(dati.get(position).testo);
             holder.tvData.setText(dati.get(position).ora);
             //serve per fare il display dei messaggi
-           /* if(dati.get(position).mittente.equals(BluetoothAdapter.getDefaultAdapter().getAddress())){
-                holder.rlChat.setGravity(Gravity.RIGHT); //se sei il mittente i messaggi sono visualizzati a destra
-                System.out.println("DESTRA");
+            if(dati.get(position).mittente != null){
+                if(dati.get(position).mittente.equals(BluetoothAdapter.getDefaultAdapter().getAddress())){
+                    holder.rlChat.setGravity(Gravity.RIGHT); //se sei il mittente i messaggi sono visualizzati a destra
+                    System.out.println("DESTRA");
+                }
+                else{
+                    holder.rlChat.setGravity(Gravity.LEFT); //altrimenti a sinistra
+                    System.out.println("SINISTRA");
+                }
             }
-            else{
-                holder.rlChat.setGravity(Gravity.LEFT); //altrimenti a sinistra
-                System.out.println("SINISTRA");
-            }*/
         }
 
         @Override
         public int getItemCount() {
-            return dati.size();
+            if(dati != null)
+                return dati.size();
+            return 0;
         }
 
         class ChatHolder extends RecyclerView.ViewHolder{

@@ -40,7 +40,7 @@ public class BluetoothChatService {
     // Member fields
     private final BluetoothAdapter mAdapter;
 
-    private  Handler mHandler;
+    private Handler mHandler;
 
     private AcceptThread mSecureAcceptThread;
     private AcceptThread mInsecureAcceptThread;
@@ -193,11 +193,11 @@ public class BluetoothChatService {
         mConnectedThread = new ConnectedThread(socket, socketType, mAdapter, this, mHandler);
         mConnectedThread.start();
 
-        Message msg = mHandler.obtainMessage(MessageConstants.MESSAGE_DEVICE_NAME);
+        /*Message msg = mHandler.obtainMessage(MessageConstants.MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
         bundle.putString(MessageConstants.DEVICE_NAME, device.getName());
         msg.setData(bundle);
-        mHandler.sendMessage(msg);
+        mHandler.sendMessage(msg);*/
 
         // Update UI title
         updateUserInterfaceTitle();
