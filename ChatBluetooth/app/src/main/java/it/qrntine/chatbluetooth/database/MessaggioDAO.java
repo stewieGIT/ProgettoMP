@@ -25,6 +25,10 @@ public interface MessaggioDAO {
     @Query("SELECT * FROM messaggio")
     List<Messaggio> scaricaMessaggi();
 
+    @Query("SELECT DISTINCT * FROM messaggio WHERE (Destinatario = :destinatario AND Mittente = :mittente) OR " +
+            "(Destinatario = :mittente AND Mittente = :destinatario)")
+    List<Messaggio> scaricaMessaggiDestinatario(String mittente, String destinatario);
+
     @Query("DELETE FROM messaggio WHERE Destinatario = :destinatario")
     void cancellaMessaggiDestinatario(String destinatario);
 }

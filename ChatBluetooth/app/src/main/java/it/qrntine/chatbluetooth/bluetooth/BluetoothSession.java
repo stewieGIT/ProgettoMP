@@ -1,8 +1,11 @@
 package it.qrntine.chatbluetooth.bluetooth;
 
+import android.bluetooth.BluetoothDevice;
+
 public class BluetoothSession {
     private static BluetoothSession instance;
     private static BluetoothChatService mBluetoothChatService;
+    private static BluetoothDevice device;
 
     private BluetoothSession(){
     }
@@ -22,4 +25,11 @@ public class BluetoothSession {
         BluetoothSession.mBluetoothChatService = mBluetoothChatService;
     }
 
+    public static BluetoothDevice getDevice(){
+        return device;
+    }
+
+    public static void setDevice(BluetoothDevice device) {
+        BluetoothSession.device = device;
+    }
 }

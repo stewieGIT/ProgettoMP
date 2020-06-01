@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 //prendo l'indirizzo del dispositivo selezionato
                 String devAddress = objDevices.get(position).getAddress();
                 session.getmBluetoothChatService().connect(objDevices.get(position),true);
-
+                session.setDevice(objDevices.get(position));
             }
 
             public class ViewHolder extends RecyclerView.ViewHolder {

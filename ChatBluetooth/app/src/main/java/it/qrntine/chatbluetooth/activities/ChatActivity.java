@@ -44,7 +44,6 @@ public class ChatActivity extends AppCompatActivity {
     private AppDatabase db; //riferimento al db
     private List<Messaggio> messaggi; //lista messaggi relativi alla chat con il destinatario
     private BluetoothSession session=BluetoothSession.getInstance();
-    private String mittente = "";
 
     @Override
     protected void onCreate(Bundle bundle){
@@ -54,6 +53,16 @@ public class ChatActivity extends AppCompatActivity {
         creaDB(); //ritorna il riferimento al db
 
         messaggi = new ArrayList<>();
+        QueryThreadDB sc = new QueryThreadDB(db, session.getmBluetoothChatService().getmAdapter().getAddress(),
+                session.getDevice().getAddress());
+        Thread scarica = new Thread(sc);
+        scarica.start();
+        try {
+            scarica.join();
+            messaggi = sc.scarica(); //scarica la cronologia della chat
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         holder = new Holder();
 
@@ -61,14 +70,27 @@ public class ChatActivity extends AppCompatActivity {
         mHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
+                InserisciThreadDB in;
+                Thread inserisci;
+                Messaggio messaggio;
+                String m;
+                byte[] buf;
+
                 switch (msg.what) {
                     case MessageConstants.MESSAGE_WRITE:
-                        byte[] buf = (byte[]) msg.obj;
-                        String m = new String(buf);
-                        Messaggio messaggio = new Messaggio();
+                        buf = (byte[]) msg.obj;
+                        m = new String(buf);
+                        messaggio = new Messaggio();
                         messaggio.testo = m;
-                        messaggio.mittente = BluetoothAdapter.getDefaultAdapter().getAddress();
+                        messaggio.mittente = session.getmBluetoothChatService().getmAdapter().getAddress();
+                        messaggio.destinatario = session.getDevice().getAddress();
+                        messaggio.data = LocalDate.now().toString();
+                        messaggio.ora = String.valueOf(LocalTime.now().getHour()) +
+                                ":" + String.valueOf(LocalTime.now().getMinute());
                         messaggi.add(messaggio);
+                        in = new InserisciThreadDB(db, messaggio);
+                        inserisci = new Thread(in);
+                        inserisci.start();
                         holder.rvChat.getAdapter().notifyDataSetChanged();
                         break;
                     case MessageConstants.MESSAGE_READ:
@@ -76,7 +98,15 @@ public class ChatActivity extends AppCompatActivity {
                         m = new String(buf, 0 , msg.arg1);
                         messaggio = new Messaggio();
                         messaggio.testo = m;
+                        messaggio.mittente = session.getDevice().getAddress();
+                        messaggio.destinatario = session.getmBluetoothChatService().getmAdapter().getAddress();
+                        messaggio.data = LocalDate.now().toString();
+                        messaggio.ora = String.valueOf(LocalTime.now().getHour()) +
+                                ":" + String.valueOf(LocalTime.now().getMinute());
                         messaggi.add(messaggio);
+                        in = new InserisciThreadDB(db, messaggio);
+                        inserisci = new Thread(in);
+                        inserisci.start();
                         holder.rvChat.getAdapter().notifyDataSetChanged();
                         break;
                     case MessageConstants.MESSAGE_TOAST: break;
@@ -85,8 +115,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         } ) ;
 
-        //session.getmBluetoothChatService().setChatHandler(mHandler);
-        //session.getmBluetoothChatService().connect(session.getDevice(), true);
         session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
     }
 
