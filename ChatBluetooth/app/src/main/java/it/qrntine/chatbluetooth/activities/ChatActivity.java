@@ -2,9 +2,11 @@ package it.qrntine.chatbluetooth.activities;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -42,6 +44,7 @@ import it.qrntine.chatbluetooth.database.InserisciThreadDB;
 import it.qrntine.chatbluetooth.database.Messaggio;
 import it.qrntine.chatbluetooth.database.QueryThreadDB;
 import it.qrntine.chatbluetooth.decorator.DecoratorRecyclerView;
+import it.qrntine.chatbluetooth.markdown.ParserMarkdown;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -210,8 +213,14 @@ public class ChatActivity extends AppCompatActivity {
         public void onClick(View v) {
             if(v.getId() == R.id.btnInviaMessaggio){ //manda messaggio non codificato
                 if(!etInserisciMessaggio.getText().toString().equals("")){
+                    String messaggioInserito = etInserisciMessaggio.getText().toString();
+                    if(!messaggioInserito.matches("^(<(.+?)*>)")) {  //se il messaggio non e' in formato html, verifico se ha notazioni markdown
+                        int n;
+                        n = ParserMarkdown.numParser(messaggioInserito);
+                        messaggioInserito = ParserMarkdown.parsing(messaggioInserito, n);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
+                    }
                     MetaMessaggio metaMessaggio = new MetaMessaggio();
-                    metaMessaggio.setTesto(etInserisciMessaggio.getText().toString().getBytes());
+                    metaMessaggio.setTesto(messaggioInserito.getBytes());
                     session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
                     etInserisciMessaggio.setText("");
                 }
@@ -250,7 +259,11 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull ChatBluetoothAdapter.ChatHolder holder, int position) {
-            holder.tvMessaggio.setText(dati.get(position).testo);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                holder.tvMessaggio.setText(Html.fromHtml(dati.get(position).testo, Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                holder.tvMessaggio.setText(dati.get(position).testo);
+            }
             holder.tvData.setText(dati.get(position).ora);
             //serve per fare il display dei messaggi
             if(dati.get(position).mittente != null){

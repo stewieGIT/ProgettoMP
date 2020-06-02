@@ -2,6 +2,7 @@ package it.qrntine.chatbluetooth.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -130,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
     class Holder implements View.OnClickListener{
         Button btnSearch, btnChat;
+        CardView cvDevice;
         RecyclerView rvDevices;
         RecyclerView.Adapter rvAdapter;
 
@@ -137,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             btnSearch=findViewById(R.id.btnSearch);
             btnChat=findViewById(R.id.btnChat);
             rvDevices=findViewById(R.id.rvDevices);
+            cvDevice = findViewById(R.id.cvDevice);
             btnSearch.setOnClickListener(this);
             btnChat.setOnClickListener(this);
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
