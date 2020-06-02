@@ -44,6 +44,9 @@ import it.qrntine.chatbluetooth.database.QueryThreadDB;
 import it.qrntine.chatbluetooth.decorator.DecoratorRecyclerView;
 
 public class ChatActivity extends AppCompatActivity {
+
+    private String data;
+    private String time;
     private CodificaAES codifica;
     private Handler mHandler;
     private Holder holder;
@@ -57,9 +60,9 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"), Locale.ITALY);
-        final String data = calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH) + "/" +
+        data = calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH) + "/" +
                 calendar.get(Calendar.YEAR);
-        final String time = calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE);
+        time = calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE);
 
         creaDB(); //ritorna il riferimento al db
 
@@ -81,77 +84,70 @@ public class ChatActivity extends AppCompatActivity {
         mHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-                InserisciThreadDB in;
-                Thread inserisci;
-                Messaggio messaggio;
-                MetaMessaggio meta;
-                String m;
-                byte[] buf;
+                MetaMessaggio metaR, metaW;
 
                 switch (msg.what) {
-                    case MessageConstants.MESSAGE_WRITE:
-                        buf = (byte[]) msg.obj;
-                        m = new String(buf);
-                        messaggio = new Messaggio();
-                        messaggio.testo = m;
-                        messaggio.mittente = session.getmBluetoothChatService().getmAdapter().getAddress();
-                        messaggio.destinatario = session.getDevice().getAddress();
-                        messaggio.data = data;
-                        messaggio.ora = time;
-                        messaggi.add(messaggio);
-                        in = new InserisciThreadDB(db, messaggio);
-                        inserisci = new Thread(in);
-                        inserisci.start();
-                        holder.rvChat.getAdapter().notifyDataSetChanged();
+                    case MessageConstants.MESSAGE_WRITE: //niente codifica write
+                        metaW = (MetaMessaggio) msg.obj;
+                        writeMessage(metaW, false);
                         break;
-                    case MessageConstants.MESSAGE_READ:
-                        buf = (byte[]) msg.obj;
-                        m = new String(buf, 0 , msg.arg1);
-                        messaggio = new Messaggio();
-                        messaggio.testo = m;
-                        messaggio.mittente = session.getDevice().getAddress();
-                        messaggio.destinatario = session.getmBluetoothChatService().getmAdapter().getAddress();
-                        messaggio.data = data;
-                        messaggio.ora = time;
-                        messaggi.add(messaggio);
-                        in = new InserisciThreadDB(db, messaggio);
-                        inserisci = new Thread(in);
-                        inserisci.start();
-                        holder.rvChat.getAdapter().notifyDataSetChanged();
+                    case MessageConstants.MESSAGE_READ: //niente codifica read
+                        metaR = (MetaMessaggio) msg.obj;
+                        readMessage(metaR, false);
+                        break;
+                    case MessageConstants.MESSAGE_OBJECT_WRITE: //codifica write
+                        metaW = (MetaMessaggio) msg.obj;
+                        writeMessage(metaW, true);
+                        break;
+                    case MessageConstants.MESSAGE_OBJECT_READ: //codifica read
+                        metaR =(MetaMessaggio) msg.obj;
+                        readMessage(metaR, true);
                         break;
                     case MessageConstants.MESSAGE_TOAST: break;
-                    case MessageConstants.MESSAGE_OBJECT_WRITE:
-                        meta = (MetaMessaggio) msg.obj;
-                        messaggio = new Messaggio();
-                        messaggio.testo = codifica.decodificaMessaggio(meta);
-                        messaggio.mittente = session.getmBluetoothChatService().getmAdapter().getAddress();
-                        messaggio.destinatario = session.getDevice().getAddress();
-                        messaggio.data = data;
-                        messaggio.ora = time;
-                        messaggi.add(messaggio);
-                        in = new InserisciThreadDB(db, messaggio);
-                        inserisci = new Thread(in);
-                        inserisci.start();
-                        holder.rvChat.getAdapter().notifyDataSetChanged();
-                        break;
-                    case MessageConstants.MESSAGE_OBJECT_READ:
-                        meta = (MetaMessaggio) msg.obj;
-                        messaggio = new Messaggio();
-                        messaggio.testo = codifica.decodificaMessaggio(meta);
-                        messaggio.mittente = session.getDevice().getAddress();
-                        messaggio.destinatario = session.getmBluetoothChatService().getmAdapter().getAddress();
-                        messaggio.data = data;
-                        messaggio.ora = time;
-                        messaggi.add(messaggio);
-                        in = new InserisciThreadDB(db, messaggio);
-                        inserisci = new Thread(in);
-                        inserisci.start();
-                        holder.rvChat.getAdapter().notifyDataSetChanged();
-                        break;
                 }
                 return true;
             }
         } ) ;
+    }
+
+    public void writeMessage(MetaMessaggio msg, boolean codifica){
+        Messaggio messaggio = new Messaggio();
+
+        if(codifica){
+            CodificaAES cod = new CodificaAES();
+            messaggio.testo = cod.decodificaMessaggio(msg);
+        }else{
+            messaggio.testo = new String(msg.getTesto());
+        }
+        messaggio.mittente = session.getmBluetoothChatService().getmAdapter().getAddress();
+        messaggio.destinatario = session.getDevice().getAddress();
+        messaggio.data = data;
+        messaggio.ora = time;
+        messaggi.add(messaggio);
+        InserisciThreadDB in = new InserisciThreadDB(db, messaggio);
+        Thread inserisci = new Thread(in);
+        inserisci.start();
+        holder.rvChat.getAdapter().notifyDataSetChanged();
+    }
+
+    public void readMessage(MetaMessaggio msg, boolean codifica){
+        Messaggio messaggio = new Messaggio();
+
+        if(codifica){
+            CodificaAES cod = new CodificaAES();
+            messaggio.testo = cod.decodificaMessaggio(msg);
+        }else{
+            messaggio.testo = new String(msg.getTesto());
+        }
+        messaggio.mittente = session.getDevice().getAddress();
+        messaggio.destinatario = session.getmBluetoothChatService().getmAdapter().getAddress();
+        messaggio.data = data;
+        messaggio.ora = time;
+        messaggi.add(messaggio);
+        InserisciThreadDB in = new InserisciThreadDB(db, messaggio);
+        Thread inserisci = new Thread(in);
+        inserisci.start();
+        holder.rvChat.getAdapter().notifyDataSetChanged();
     }
 
     @Override
@@ -212,19 +208,22 @@ public class ChatActivity extends AppCompatActivity {
          */
         @Override
         public void onClick(View v) {
-            if(v.getId() == R.id.btnInviaMessaggio){
+            if(v.getId() == R.id.btnInviaMessaggio){ //manda messaggio non codificato
                 if(!etInserisciMessaggio.getText().toString().equals("")){
-                    session.getmBluetoothChatService().write(etInserisciMessaggio.getText().toString().getBytes());
+                    MetaMessaggio metaMessaggio = new MetaMessaggio();
+                    metaMessaggio.setTesto(etInserisciMessaggio.getText().toString().getBytes());
+                    session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
                     etInserisciMessaggio.setText("");
                 }
             }
-            if(v.getId() == R.id.btnCSend){
+            if(v.getId() == R.id.btnCSend){ //manda messaggio codificato
                 if(!etInserisciMessaggio.getText().toString().equals("")){
                     codifica = new CodificaAES();
                     String messaggio = etInserisciMessaggio.getText().toString();
 
                     MetaMessaggio metaMessaggio = codifica.codificaMessaggio(messaggio);
                     session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
+                    etInserisciMessaggio.setText("");
                 }
             }
         }

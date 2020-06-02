@@ -77,59 +77,21 @@ import it.qrntine.chatbluetooth.codifica.MetaMessaggio;
 
         // Keep listening to the InputStream while connected
         while (mBluetoothChatService.getmState() == STATE_CONNECTED) {
-            try {
-                // Read from the InputStream
-                bytes = mmInStream.read(buffer);
-
-//                try{
-//                    ObjectInputStream ois = new ObjectInputStream(mmInStream);
-//                    Object obj = ois.readObject();
-//                    if(obj != null){
-//                        mHandler.obtainMessage(MessageConstants.MESSAGE_OBJECT_READ, obj).sendToTarget();
-//                    }
-//                }catch(ClassNotFoundException e){
-//                    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>ERRORE READOBJECT");
-//                }
-
-                // Send the obtained bytes to the UI Activity
-                mHandler.obtainMessage(MessageConstants.MESSAGE_READ, bytes, -1, buffer)
-                        .sendToTarget();
-
-                System.out.println("*****************Messaggio ricevuto: (bytes) " + bytes);
-
-            } catch (IOException e) {
-                Log.e(TAG, "disconnected", e);
-                mBluetoothChatService.connectionLost();
-                break;
-            }
-        }
-    }
-
-    /**
-     * Write to the connected OutStream.
-     *
-     * @param buffer The bytes to write
-     */
-    public void write(byte[] buffer) {
-        System.out.println("*********************Connected_Thread ENTRO IN WRITE");
-        try {
-            mmOutStream.write(buffer);
-
-            // Share the sent message back to the UI Activity
-            mHandler.obtainMessage(MessageConstants.MESSAGE_WRITE, -1, -1, buffer)
-                    .sendToTarget();
-
-        } catch (IOException e) {
-            Log.e(TAG, "Exception during write", e);
-
-            Message writeErrorMsg =
-                    mHandler.obtainMessage(MessageConstants.MESSAGE_TOAST);
-            Bundle bundle = new Bundle();
-            bundle.putString("toast",
-                    "Couldn't send data to the other device");
-            writeErrorMsg.setData(bundle);
-            mHandler.sendMessage(writeErrorMsg);
-
+            try{
+                    ObjectInputStream ois = new ObjectInputStream(mmInStream); //apri un ObjectInputStream
+                    Object obj = ois.readObject(); //leggi il MetaMessaggio
+                    MetaMessaggio meta = (MetaMessaggio) obj;
+                    if(obj != null){ //se l'oggetto è null c'è stato un errore
+                        if(meta.getIvp() == null){ //se il campo IVP è vuoto è un messaggio non codificato
+                            mHandler.obtainMessage(MessageConstants.MESSAGE_READ, obj).sendToTarget();
+                        }
+                        else mHandler.obtainMessage(MessageConstants.MESSAGE_OBJECT_READ, obj).sendToTarget(); //altrimenti è cod.
+                    }
+                }catch(IOException e1){
+                    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>IOEXCEPTION READOBJECT");
+                }catch(ClassNotFoundException e2){
+                    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>CLASSNOTFOUND READOBJECT");
+                }
         }
     }
 
@@ -139,12 +101,15 @@ import it.qrntine.chatbluetooth.codifica.MetaMessaggio;
      */
     public void writeObject(Object msg){
         try{
-            ObjectOutputStream oos = new ObjectOutputStream(mmOutStream);
-            oos.writeObject(msg);
-            oos.close();
-            mHandler.obtainMessage(MessageConstants.MESSAGE_OBJECT_WRITE, msg).sendToTarget();
+            ObjectOutputStream oos = new ObjectOutputStream(mmOutStream); //apri un ObjectOutputStream
+            oos.writeObject(msg); //scrivi il MetaMessaggio
+            MetaMessaggio meta = (MetaMessaggio) msg;
+            if(meta.getIvp() == null){ //se il campo IVP è vuoto si tratta di un messaggio non codificato
+                mHandler.obtainMessage(MessageConstants.MESSAGE_WRITE, msg).sendToTarget(); //notifica che il meta non è codificato
+            }
+            else mHandler.obtainMessage(MessageConstants.MESSAGE_OBJECT_WRITE, msg).sendToTarget(); //altrimenti è codificato
         }catch(IOException e){
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ERRORE WRITEOBJECT");
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>IOEXCEPTION WRITEOBJECT");
         }
     }
 
@@ -158,7 +123,7 @@ import it.qrntine.chatbluetooth.codifica.MetaMessaggio;
     }
 
     /**
-     * cambia l'handler
+     * cambia l'handler e imposta quello della ChatActivity
      * @param mHandler
      */
     public void setmHandler(Handler mHandler) {
