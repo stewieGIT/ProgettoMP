@@ -225,6 +225,10 @@ public class MainActivity extends AppCompatActivity {
                         showToast("Scansione iniziata");
                     }
                     break;
+                case (R.id.btnChat):
+                    Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
+                    startActivity(intent);
+                    break;
             }
 
         }
