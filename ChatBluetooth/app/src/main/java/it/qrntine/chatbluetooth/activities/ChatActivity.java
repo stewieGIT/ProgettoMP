@@ -1,7 +1,8 @@
 package it.qrntine.chatbluetooth.activities;
 
+import android.app.SearchManager;
 import android.bluetooth.BluetoothAdapter;
-import android.content.Intent;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,16 +10,20 @@ import android.os.Message;
 import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,19 +51,20 @@ import it.qrntine.chatbluetooth.database.QueryThreadDB;
 import it.qrntine.chatbluetooth.decorator.DecoratorRecyclerView;
 import it.qrntine.chatbluetooth.markdown.ParserMarkdown;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
+    private SearchView searchView;
     private String data;
     private String time;
     private CodificaAES codifica;
     private Handler mHandler;
     private Holder holder;
     private AppDatabase db; //riferimento al db
-    private List<Messaggio> messaggi; //lista messaggi relativi alla chat con il destinatario
-    private BluetoothSession session=BluetoothSession.getInstance();
+    private List <Messaggio> messaggi; //lista messaggi relativi alla chat con il destinatario
+    private BluetoothSession session = BluetoothSession.getInstance();
 
     @Override
-    protected void onCreate(Bundle bundle){
+    protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_chat);
 
@@ -69,7 +75,7 @@ public class ChatActivity extends AppCompatActivity {
 
         creaDB(); //ritorna il riferimento al db
 
-        messaggi = new ArrayList<>();
+        messaggi = new ArrayList <>();
         QueryThreadDB sc = new QueryThreadDB(db, session.getmBluetoothChatService().getmAdapter().getAddress(),
                 session.getDevice().getAddress());
         Thread scarica = new Thread(sc);
@@ -103,23 +109,24 @@ public class ChatActivity extends AppCompatActivity {
                         writeMessage(metaW, true);
                         break;
                     case MessageConstants.MESSAGE_OBJECT_READ: //codifica read
-                        metaR =(MetaMessaggio) msg.obj;
+                        metaR = (MetaMessaggio) msg.obj;
                         readMessage(metaR, true);
                         break;
-                    case MessageConstants.MESSAGE_TOAST: break;
+                    case MessageConstants.MESSAGE_TOAST:
+                        break;
                 }
                 return true;
             }
-        } ) ;
+        });
     }
 
-    public void writeMessage(MetaMessaggio msg, boolean codifica){
+    public void writeMessage(MetaMessaggio msg, boolean codifica) {
         Messaggio messaggio = new Messaggio();
 
-        if(codifica){
+        if (codifica) {
             CodificaAES cod = new CodificaAES();
             messaggio.testo = cod.decodificaMessaggio(msg);
-        }else{
+        } else {
             messaggio.testo = new String(msg.getTesto());
         }
         messaggio.mittente = session.getmBluetoothChatService().getmAdapter().getAddress();
@@ -133,13 +140,13 @@ public class ChatActivity extends AppCompatActivity {
         holder.rvChat.getAdapter().notifyDataSetChanged();
     }
 
-    public void readMessage(MetaMessaggio msg, boolean codifica){
+    public void readMessage(MetaMessaggio msg, boolean codifica) {
         Messaggio messaggio = new Messaggio();
 
-        if(codifica){
+        if (codifica) {
             CodificaAES cod = new CodificaAES();
             messaggio.testo = cod.decodificaMessaggio(msg);
-        }else{
+        } else {
             messaggio.testo = new String(msg.getTesto());
         }
         messaggio.mittente = session.getDevice().getAddress();
@@ -156,17 +163,18 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(session.getmBluetoothChatService().getmConnectedThread() != null)
+        if (session.getmBluetoothChatService().getmConnectedThread() != null)
             session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
     }
 
     /**
      * per il menu
+     *
      * @param item
      * @return
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
        /* if(item.getItemId() == R.id.itRicerca){
             //ricerca keyword
         }else{
@@ -178,18 +186,56 @@ public class ChatActivity extends AppCompatActivity {
     /**
      * crea istanza di DB con Room
      */
-    private void creaDB(){
+    private void creaDB() {
         db = Room.databaseBuilder(getApplicationContext(),
                 AppDatabase.class, "messaggi").build();
     }
 
-    class Holder implements View.OnClickListener{
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+   
+        ArrayList<Messaggio> tmp = new ArrayList <>();
+        for(Messaggio msg : messaggi){
+            if(msg.testo.contains(query)){
+
+                tmp.add(msg);
+            }
+        }
+        messaggi.clear();
+        for(Messaggio msg :  tmp){
+            messaggi.add(msg);
+        }
+        holder.rvChat.getAdapter().notifyDataSetChanged();
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+
+        System.out.println("_________-------------------------_>>>>>>>>>>>>>>>>>>>" + newText);
+        ArrayList<Messaggio> tmp = new ArrayList <>();
+        for(Messaggio msg : messaggi){
+            if(msg.testo.contains(newText)){
+                System.out.println("MESSAGGIO _____-------------------------------->>>>>" + msg.testo);
+                tmp.add(msg);
+            }
+        }
+        messaggi.clear();
+        for(Messaggio msg :  tmp){
+            messaggi.add(msg);
+        }
+        holder.rvChat.getAdapter().notifyDataSetChanged();
+        return true;
+    }
+
+
+    class Holder implements View.OnClickListener {
 
         private RecyclerView rvChat;
         private EditText etInserisciMessaggio;
         private Button btnInviaMessaggio, btnCSend;
 
-        public Holder(){
+        public Holder() {
             etInserisciMessaggio = findViewById(R.id.etInserisciMessaggio);
             btnInviaMessaggio = findViewById(R.id.btnInviaMessaggio);
             btnCSend = findViewById(R.id.btnCSend);
@@ -207,15 +253,16 @@ public class ChatActivity extends AppCompatActivity {
 
         /**
          * nel caso del bottone inviaMessaggio provvederà a creare il messaggio, visualizzarlo nella RV e salvarlo nel DB
+         *
          * @param v la view che ha ricevuto l'evento
          */
         @Override
         public void onClick(View v) {
-            if(v.getId() == R.id.btnInviaMessaggio){ //manda messaggio non codificato
-                if(!etInserisciMessaggio.getText().toString().equals("")){
+            if (v.getId() == R.id.btnInviaMessaggio) { //manda messaggio non codificato
+                if (!etInserisciMessaggio.getText().toString().equals("")) {
                     String messaggioInserito = etInserisciMessaggio.getText().toString();
 
-                    if(!messaggioInserito.matches("^(<(.+?)*>)")) {  //se il messaggio non e' in formato html, verifico se ha notazioni markdown
+                    if (!messaggioInserito.matches("^(<(.+?)*>)")) {  //se il messaggio non e' in formato html, verifico se ha notazioni markdown
                         int n;
                         n = ParserMarkdown.numParser(messaggioInserito);
                         messaggioInserito = ParserMarkdown.parsing(messaggioInserito, n);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
@@ -227,13 +274,13 @@ public class ChatActivity extends AppCompatActivity {
                     etInserisciMessaggio.setText("");
                 }
             }
-            if(v.getId() == R.id.btnCSend){ //manda messaggio codificato
-                if(!etInserisciMessaggio.getText().toString().equals("")){
+            if (v.getId() == R.id.btnCSend) { //manda messaggio codificato
+                if (!etInserisciMessaggio.getText().toString().equals("")) {
                     codifica = new CodificaAES();
 
                     String messaggioInserito = etInserisciMessaggio.getText().toString();
 
-                    if(!messaggioInserito.matches("^(<(.+?)*>)")) {  //se il messaggio non e' in formato html, verifico se ha notazioni markdown
+                    if (!messaggioInserito.matches("^(<(.+?)*>)")) {  //se il messaggio non e' in formato html, verifico se ha notazioni markdown
                         int n;
                         n = ParserMarkdown.numParser(messaggioInserito);
                         messaggioInserito = ParserMarkdown.parsing(messaggioInserito, n);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
@@ -241,7 +288,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     MetaMessaggio metaMessaggio = codifica.codificaMessaggio(messaggioInserito);
 
-                    System.out.println(">>>>>>>>>>>>>>>>>>>>MSG CODED: "+metaMessaggio);
+                    System.out.println(">>>>>>>>>>>>>>>>>>>>MSG CODED: " + metaMessaggio);
 
                     session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
                     etInserisciMessaggio.setText("");
@@ -252,14 +299,16 @@ public class ChatActivity extends AppCompatActivity {
 
     /*
     /*adapter per il recyclerview*/
-    class ChatBluetoothAdapter extends RecyclerView.Adapter<ChatBluetoothAdapter.ChatHolder>{
+    class ChatBluetoothAdapter extends RecyclerView.Adapter <ChatBluetoothAdapter.ChatHolder> {
 
-        private List<Messaggio> dati;
+        private List <Messaggio> dati;
 
-        public ChatBluetoothAdapter(List<Messaggio> dati){
+        public ChatBluetoothAdapter(List <Messaggio> dati) {
             this.dati = dati;
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + dati);
         }
+
+
 
         @NonNull
         @Override
@@ -278,12 +327,11 @@ public class ChatActivity extends AppCompatActivity {
             }
             holder.tvData.setText(dati.get(position).ora);
             //serve per fare il display dei messaggi
-            if(dati.get(position).mittente != null){
-                if(dati.get(position).mittente.equals(BluetoothAdapter.getDefaultAdapter().getAddress())){
+            if (dati.get(position).mittente != null) {
+                if (dati.get(position).mittente.equals(BluetoothAdapter.getDefaultAdapter().getAddress())) {
                     holder.rlChat.setGravity(Gravity.RIGHT); //se sei il mittente i messaggi sono visualizzati a destra
                     System.out.println("DESTRA");
-                }
-                else{
+                } else {
                     holder.rlChat.setGravity(Gravity.LEFT); //altrimenti a sinistra
                     System.out.println("SINISTRA");
                 }
@@ -292,12 +340,13 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            if(dati != null)
+            if (dati != null)
                 return dati.size();
             return 0;
         }
 
-        class ChatHolder extends RecyclerView.ViewHolder{
+
+        class ChatHolder extends RecyclerView.ViewHolder {
 
             private RelativeLayout rlChat;
             private CardView cvChat;
@@ -314,7 +363,19 @@ public class ChatActivity extends AppCompatActivity {
             }
         }
     }
-    public void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        MenuItem searchItem = menu.findItem(R.id.search_menu);
+
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setQueryHint("Search Message");
+        searchView.setOnQueryTextListener(this);
+        searchView.setIconified(false);
+
+        return true;
     }
-}
+    }
+
+
