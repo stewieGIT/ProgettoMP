@@ -214,11 +214,13 @@ public class ChatActivity extends AppCompatActivity {
             if(v.getId() == R.id.btnInviaMessaggio){ //manda messaggio non codificato
                 if(!etInserisciMessaggio.getText().toString().equals("")){
                     String messaggioInserito = etInserisciMessaggio.getText().toString();
+
                     if(!messaggioInserito.matches("^(<(.+?)*>)")) {  //se il messaggio non e' in formato html, verifico se ha notazioni markdown
                         int n;
                         n = ParserMarkdown.numParser(messaggioInserito);
                         messaggioInserito = ParserMarkdown.parsing(messaggioInserito, n);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
                     }
+
                     MetaMessaggio metaMessaggio = new MetaMessaggio();
                     metaMessaggio.setTesto(messaggioInserito.getBytes());
                     session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
@@ -228,9 +230,19 @@ public class ChatActivity extends AppCompatActivity {
             if(v.getId() == R.id.btnCSend){ //manda messaggio codificato
                 if(!etInserisciMessaggio.getText().toString().equals("")){
                     codifica = new CodificaAES();
-                    String messaggio = etInserisciMessaggio.getText().toString();
 
-                    MetaMessaggio metaMessaggio = codifica.codificaMessaggio(messaggio);
+                    String messaggioInserito = etInserisciMessaggio.getText().toString();
+
+                    if(!messaggioInserito.matches("^(<(.+?)*>)")) {  //se il messaggio non e' in formato html, verifico se ha notazioni markdown
+                        int n;
+                        n = ParserMarkdown.numParser(messaggioInserito);
+                        messaggioInserito = ParserMarkdown.parsing(messaggioInserito, n);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
+                    }
+
+                    MetaMessaggio metaMessaggio = codifica.codificaMessaggio(messaggioInserito);
+
+                    System.out.println(">>>>>>>>>>>>>>>>>>>>MSG CODED: "+metaMessaggio);
+
                     session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
                     etInserisciMessaggio.setText("");
                 }
