@@ -65,7 +65,12 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"), Locale.ITALY);
         data = calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH) + "/" +
                 calendar.get(Calendar.YEAR);
-        time = calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE);
+        int minuto = calendar.get(Calendar.MINUTE);
+        if(minuto < 10) {
+            time = calendar.get(Calendar.HOUR_OF_DAY) + ":0" + minuto;
+        } else {
+            time = calendar.get(Calendar.HOUR_OF_DAY) + ":" + minuto;
+        }
 
         creaDB(); //ritorna il riferimento al db
 
@@ -132,6 +137,8 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         Thread inserisci = new Thread(in);
         inserisci.start();
         holder.rvChat.getAdapter().notifyDataSetChanged();
+        holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
+
     }
 
     public void readMessage(MetaMessaggio msg, boolean codifica) {
@@ -152,6 +159,8 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         Thread inserisci = new Thread(in);
         inserisci.start();
         holder.rvChat.getAdapter().notifyDataSetChanged();
+        holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
+
     }
 
     @Override
@@ -192,40 +201,30 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-   
-        ArrayList<Messaggio> tmp = new ArrayList <>();
-        for(Messaggio msg : messaggi){
-            if(msg.testo.contains(query)){
 
-                tmp.add(msg);
-            }
-        }
-        messaggi.clear();
-        for(Messaggio msg :  tmp){
-            messaggi.add(msg);
-        }
-        holder.rvChat.getAdapter().notifyDataSetChanged();
-        return true;
+        return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-
-        System.out.println("_________-------------------------_>>>>>>>>>>>>>>>>>>>" + newText);
-        ArrayList<Messaggio> tmp = new ArrayList <>();
-        for(Messaggio msg : messaggi){
-            if(msg.testo.contains(newText)){
-                System.out.println("MESSAGGIO _____-------------------------------->>>>>" + msg.testo);
-                tmp.add(msg);
+        if(!newText.isEmpty()) {
+            ArrayList <Messaggio> tmp = new ArrayList <>();
+            for (Messaggio msg : messaggi) {
+                if (msg.testo.contains(newText)) {
+                    tmp.add(msg);
+                }
             }
+            holder.rvChat.setAdapter(new ChatBluetoothAdapter(tmp));
+            holder.rvChat.getAdapter().notifyDataSetChanged();
         }
-        messaggi.clear();
-        for(Messaggio msg :  tmp){
-            messaggi.add(msg);
+        else {
+            holder.rvChat.setAdapter(new ChatBluetoothAdapter(messaggi));
+            holder.rvChat.getAdapter().notifyDataSetChanged();
+            holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
         }
-        holder.rvChat.getAdapter().notifyDataSetChanged();
-        return true;
+        return false;
     }
+
 
 
     class Holder implements View.OnClickListener {
@@ -373,7 +372,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search Message");
         searchView.setOnQueryTextListener(this);
-        searchView.setIconified(false);
 
         return true;
     }
