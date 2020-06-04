@@ -329,9 +329,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             //serve per fare il display dei messaggi
             if (dati.get(position).mittente != null) {
                 if (dati.get(position).mittente.equals(BluetoothAdapter.getDefaultAdapter().getAddress())) {
+                    holder.cvChat.setCardBackgroundColor(getColor(R.color.colorMittente));
                     holder.rlChat.setGravity(Gravity.RIGHT); //se sei il mittente i messaggi sono visualizzati a destra
                     System.out.println("DESTRA");
                 } else {
+                    holder.cvChat.setCardBackgroundColor(getColor(R.color.colorDestinatario));
                     holder.rlChat.setGravity(Gravity.LEFT); //altrimenti a sinistra
                     System.out.println("SINISTRA");
                 }
