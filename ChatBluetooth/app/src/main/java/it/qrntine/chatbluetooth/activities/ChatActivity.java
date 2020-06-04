@@ -1,6 +1,5 @@
 package it.qrntine.chatbluetooth.activities;
 
-import android.app.SearchManager;
 import android.bluetooth.BluetoothAdapter;
 
 import android.os.Build;
@@ -20,18 +19,14 @@ import android.widget.RelativeLayout;
 
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -39,7 +34,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import it.qrntine.chatbluetooth.R;
-import it.qrntine.chatbluetooth.bluetooth.BluetoothChatService;
 import it.qrntine.chatbluetooth.bluetooth.BluetoothSession;
 import it.qrntine.chatbluetooth.bluetooth.MessageConstants;
 import it.qrntine.chatbluetooth.codifica.CodificaAES;
@@ -163,8 +157,13 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onStart() {
         super.onStart();
-        if (session.getmBluetoothChatService().getmConnectedThread() != null)
+        if(session.getmBluetoothChatService().getmConnectedThread() != null)
             session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
+
+        if(session.getmBluetoothChatService().getmState() == 0){
+            holder.btnCSend.setEnabled(false);
+            holder.btnInviaMessaggio.setEnabled(false);
+        }
     }
 
     /**
