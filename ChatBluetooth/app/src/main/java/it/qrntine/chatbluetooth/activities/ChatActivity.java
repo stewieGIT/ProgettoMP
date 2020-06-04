@@ -164,12 +164,24 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         if(session.getmBluetoothChatService().getmConnectedThread() != null)
             session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
 
-        if(session.getmBluetoothChatService().getmState() == 0){
+        if(session.getmBluetoothChatService().getmState() != 3){
             holder.btnCSend.setEnabled(false);
             holder.btnInviaMessaggio.setEnabled(false);
         }

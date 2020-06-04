@@ -71,6 +71,12 @@ public class ChatListActivity extends AppCompatActivity {
         holder=new Holder();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
+    }
+
     class Holder {
         RecyclerView rvChatList;
         public Holder(){
