@@ -2,6 +2,7 @@ package it.qrntine.chatbluetooth.activities;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,7 +84,7 @@ public class ChatListActivity extends AppCompatActivity {
         }
     }
 
-    class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatHolder> {
+    class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatHolder> implements View.OnClickListener {
 
         private ArrayList<BluetoothDevice> data;
 
@@ -96,6 +97,7 @@ public class ChatListActivity extends AppCompatActivity {
         public ChatListAdapter.ChatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             ConstraintLayout cl = (ConstraintLayout) LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_chat_list, parent, false);
+            cl.setOnClickListener(this);
             return new ChatHolder(cl);
         }
 
@@ -110,6 +112,16 @@ public class ChatListActivity extends AppCompatActivity {
                 return data.size();
             }
             return 0;
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
+
+            session.setDevice(data.get(position));
+            session.getmBluetoothChatService().connect(data.get(position), true);
+            Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
+            startActivity(intent);
         }
 
         class ChatHolder extends RecyclerView.ViewHolder {
