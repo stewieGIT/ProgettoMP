@@ -222,7 +222,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         inserisci.start();
         holder.rvChat.getAdapter().notifyDataSetChanged();
         holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
-
     }
 
     /**
@@ -390,6 +389,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         MenuItem searchItem = menu.findItem(R.id.search_menu);
 
@@ -399,6 +399,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
         return true;
     }
-    }
+}
 
 

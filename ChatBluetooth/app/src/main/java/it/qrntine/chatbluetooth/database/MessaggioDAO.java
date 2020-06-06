@@ -29,6 +29,6 @@ public interface MessaggioDAO {
             "(Destinatario = :mittente AND Mittente = :destinatario)")
     List<Messaggio> scaricaMessaggiDestinatario(String mittente, String destinatario);
 
-    @Query("DELETE FROM messaggio WHERE Destinatario = :destinatario")
+    @Query("DELETE FROM messaggio WHERE Destinatario = :destinatario OR Mittente = :destinatario")
     void cancellaMessaggiDestinatario(String destinatario);
 }

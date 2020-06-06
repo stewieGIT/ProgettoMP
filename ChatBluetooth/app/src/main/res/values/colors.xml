@@ -6,4 +6,6 @@
 
     <color name="colorMittente">#00B0FF</color>
     <color name="colorDestinatario">#ADE5FF</color>
+    <color name="colorSelected">#FFDCF4FF</color>
+    <color name="colorBGSelected">#FFE7F7FF</color>
 </resources>

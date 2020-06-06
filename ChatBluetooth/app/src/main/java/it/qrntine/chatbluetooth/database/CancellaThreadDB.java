@@ -3,7 +3,7 @@ package it.qrntine.chatbluetooth.database;
 public class CancellaThreadDB implements Runnable{
 
     private AppDatabase db; //riferimento al db
-    private Messaggio messaggio; //messaggio da cancellare: da implementare varie funzioni
+    private String destinatario; //messaggio da cancellare: da implementare varie funzioni
     private boolean running; //variabile di stato running
 
     /**
@@ -18,11 +18,11 @@ public class CancellaThreadDB implements Runnable{
     /**
      * costruttore con messaggio
      * @param db riferimento db
-     * @param messaggio da eliminare
+     * @param destinatario da eliminare
      */
-    public CancellaThreadDB(AppDatabase db, Messaggio messaggio){
+    public CancellaThreadDB(AppDatabase db, String destinatario){
         this.db = db;
-        this.messaggio = messaggio;
+        this.destinatario = destinatario;
         running = true;
     }
 
@@ -30,7 +30,7 @@ public class CancellaThreadDB implements Runnable{
     public void run() {
         while(running){
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Delete Avviato");
-            db.messaggioDAO().cancellaMessaggiDestinatario(messaggio.destinatario); //cancella messaggio/messaggi con quel destinatario
+            db.messaggioDAO().cancellaMessaggiDestinatario(destinatario); //cancella messaggio/messaggi con quel destinatario
             running = false;
         }
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Delete Terminato");
