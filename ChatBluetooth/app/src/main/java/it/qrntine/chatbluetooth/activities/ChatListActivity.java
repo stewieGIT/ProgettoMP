@@ -49,16 +49,15 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
-        setTitle("Chat List"); //il titolo
+        setTitle("Chat List"); //titolo activity
 
-        session.setCurrentActivity(ActivityConstants.ACTIVITY_CHATLIST);
+        session.setCurrentActivity(ActivityConstants.ACTIVITY_CHATLIST); //activity attiva nella sessione
 
         BluetoothAdapter adapter = session.getmBluetoothChatService().getmAdapter();
+        pairedDevices = adapter.getBondedDevices(); //prendiamo i dispositivi già accoppiati
 
         creaDB();
-        pairedDevices = adapter.getBondedDevices();
-
-        checkDatabaseForExistingChat();
+        checkDatabaseForExistingChat(); //verifichiamo che abbiamo una chat con questi devices
 
         holder=new Holder();
     }
@@ -67,13 +66,13 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
     protected void onResume() {
         super.onResume();
 
-        checkDatabaseForExistingChat();
+        checkDatabaseForExistingChat(); //verifichiamo se esistono nuove chat
         holder.rvChatList.getAdapter().notifyDataSetChanged();
 
-        if(session.getErrorNum() == ErrorConstants.ERROR_USER_DISCONNECTED){
+        if(session.getErrorNum() == ErrorConstants.ERROR_USER_DISCONNECTED){ //annunciamo che il destinatario si è disconnesso
             Toast.makeText(ChatListActivity.this, R.string.error_user_disconnected, Toast.LENGTH_LONG).show();
         }
-        session.getmBluetoothChatService().stop();
+        session.getmBluetoothChatService().stop(); //riavviamo il servizio di chat
         session.getmBluetoothChatService().start();
     }
 
@@ -86,7 +85,7 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if(item.getItemId() == R.id.delete_menu_chatlist){
-            if(selectedChats.size() > 0){
+            if(selectedChats.size() > 0){ //se esistono elementi selezionati cancelliamo le chat selezionate
                 for(BluetoothDevice device: selectedChats){
                     CancellaThreadDB can = new CancellaThreadDB(db, device.getAddress());
                     Thread cancella = new Thread(can);
@@ -98,7 +97,7 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
                         e.printStackTrace();
                     }
                 }
-                clearArray(selectedChats);
+                clearArray(selectedChats); //puliamo l'array
                 Toast.makeText(ChatListActivity.this, "Chat deleted", Toast.LENGTH_LONG).show();
                 holder.rvChatList.getAdapter().notifyDataSetChanged();
             }

@@ -137,12 +137,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        finish();
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
         if(session.getmBluetoothChatService().getmConnectedThread() != null)
