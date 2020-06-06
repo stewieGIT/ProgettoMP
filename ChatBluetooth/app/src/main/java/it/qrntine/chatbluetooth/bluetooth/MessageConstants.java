@@ -11,6 +11,7 @@ public interface MessageConstants {
     public static final int MESSAGE_TOAST = 5;
     public static final int MESSAGE_OBJECT_WRITE = 6;
     public static final int MESSAGE_OBJECT_READ = 7;
+    public static final int MESSAGE_OBJECT_ERROR_READ = 8;
 
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";

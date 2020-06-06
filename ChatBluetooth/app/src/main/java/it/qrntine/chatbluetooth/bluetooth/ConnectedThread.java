@@ -72,8 +72,6 @@ import it.qrntine.chatbluetooth.codifica.MetaMessaggio;
     public void run() {
         System.out.println("*********************Connected_Thread ENTRO IN RUN");
         Log.i(TAG, "BEGIN mConnectedThread");
-        buffer = new byte[1024];
-        int bytes;
 
         // Keep listening to the InputStream while connected
         while (mBluetoothChatService.getmState() == STATE_CONNECTED) {
@@ -89,6 +87,7 @@ import it.qrntine.chatbluetooth.codifica.MetaMessaggio;
                     }
                 }catch(IOException e1){
                     System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>IOEXCEPTION READOBJECT");
+                    mHandler.sendEmptyMessage(MessageConstants.MESSAGE_OBJECT_ERROR_READ);
                 }catch(ClassNotFoundException e2){
                     System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>CLASSNOTFOUND READOBJECT");
                 }

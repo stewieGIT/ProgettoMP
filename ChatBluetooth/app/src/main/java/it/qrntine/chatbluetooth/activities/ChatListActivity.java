@@ -72,6 +72,14 @@ public class ChatListActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        session.getmBluetoothChatService().stop();
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>THREAD STOPPED");
+        session.getmBluetoothChatService().start();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         finish();
