@@ -136,6 +136,12 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         if(session.getmBluetoothChatService().getmConnectedThread() != null)
@@ -216,12 +222,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         holder.rvChat.getAdapter().notifyDataSetChanged();
         holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
 
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        finish();
     }
 
     /**
