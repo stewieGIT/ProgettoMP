@@ -144,11 +144,11 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         @Override
         public void onBindViewHolder(@NonNull ChatListAdapter.ChatHolder holder, int position) {
             holder.tvChat.setText(data.get(position).getName());
-            if(checkExistance(data.get(position), selectedChats)){
+            if(checkExistance(data.get(position), selectedChats)){ //se esiste nell'array selezionati evidenzialo
                 cl.setBackgroundColor(getColor(R.color.colorBGSelected));
                 holder.cvChatList.setCardBackgroundColor(getColor(R.color.colorSelected));
             }
-            else{
+            else{ //altrimenti niente effetto visivo
                 cl.setBackgroundColor(Color.TRANSPARENT);
                 holder.cvChatList.setCardBackgroundColor(getColor(R.color.colorDestinatario));
             }
@@ -168,7 +168,7 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
 
             session.setDevice(data.get(position));
             session.getmBluetoothChatService().connect(data.get(position), true);
-            clearArray(selectedChats);
+            clearArray(selectedChats); //pulisci gli array per il passaggio all'activity chat
             clearArray(chatDevices);
             Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
             startActivity(intent);
@@ -177,11 +177,11 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         @Override
         public boolean onLongClick(View v) {
             int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
-            if(!checkExistance(data.get(position), selectedChats)){
+            if(!checkExistance(data.get(position), selectedChats)){ //se l'elemento non esiste aggiungilo
                 selectedChats.add(data.get(position));
                 Toast.makeText(ChatListActivity.this, "Selected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
-            }else{
+            }else{ //altrimenti no
                 selectedChats.remove(data.get(position));
                 Toast.makeText(ChatListActivity.this, "Unselected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
@@ -222,6 +222,7 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         return true;
     }
 
+    //verifica se esiste una chat per ogni dispositivo accoppiato
     public void checkDatabaseForExistingChat(){
         Iterator it = pairedDevices.iterator();
         BluetoothDevice device;
@@ -246,6 +247,7 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         }
     }
 
+    //verifica l'esistenza di un oggetto nell'array
     public boolean checkExistance(BluetoothDevice device, ArrayList<BluetoothDevice> array){
         for(BluetoothDevice d: array){
             if(d.getAddress().equals(device.getAddress())){
@@ -255,6 +257,7 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         return false;
     }
 
+    //pulisci l'array
     public void clearArray(ArrayList<BluetoothDevice> array){
         for(BluetoothDevice d: array){
             array.remove(d);

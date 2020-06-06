@@ -48,7 +48,6 @@ import it.qrntine.chatbluetooth.markdown.ParserMarkdown;
 
 public class ChatActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    private SearchView searchView;
     private String data;
     private String time;
     private CodificaAES codifica;
@@ -65,9 +64,9 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         setContentView(R.layout.activity_chat);
         setTitle(session.getDevice().getName());
 
-        session.setCurrentActivity(ActivityConstants.ACTIVITY_CHAT);
+        session.setCurrentActivity(ActivityConstants.ACTIVITY_CHAT); //activity attiva nella sessione
 
-        modCriptata = false;
+        modCriptata = false; //AES disattivato
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"), Locale.ITALY);
         data = calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH) + "/" +
@@ -95,7 +94,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
         holder = new Holder();
 
-        // DA GESTIRE LA CALLBACK FARE UN NUOVO HANDLER DEDICATO ALLA CHAT NEL BLUETOOTH CHAT SERVICE DA PASSARE AL CONNECTED THREAD
+        //gestiscisce comunicazione con il thread connected
         mHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
@@ -140,9 +139,9 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     protected void onStart() {
         super.onStart();
         if(session.getmBluetoothChatService().getmConnectedThread() != null)
-            session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
+            session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler); //passa il chat handler
 
-        if(session.getmBluetoothChatService().getmState() != 3){
+        if(session.getmBluetoothChatService().getmState() != 3){ //se non connesso disattiva bottoni
             holder.ivModCriptata.setEnabled(false);
             holder.ivInviaMessaggio.setEnabled(false);
             holder.ivInviaMessaggio.setAlpha(0.3f);
@@ -156,7 +155,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
-    public boolean onQueryTextChange(String newText) {
+    public boolean onQueryTextChange(String newText) { //cerca i messaggi aventi la keyword digitata
         if(!newText.isEmpty()) {
             ArrayList <Messaggio> tmp = new ArrayList <>();
             for (Messaggio msg : messaggi) {
@@ -175,6 +174,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         return false;
     }
 
+    //scrivi messaggio sul DB e sulla RV
     public void writeMessage(MetaMessaggio msg, boolean codifica) {
         Messaggio messaggio = new Messaggio();
 
@@ -197,6 +197,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
     }
 
+    //Leggi messaggio e scrivi sul DB
     public void readMessage(MetaMessaggio msg, boolean codifica) {
         Messaggio messaggio = new Messaggio();
 
@@ -216,22 +217,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         inserisci.start();
         holder.rvChat.getAdapter().notifyDataSetChanged();
         holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
-    }
-
-    /**
-     * per il menu
-     *
-     * @param item
-     * @return
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-       /* if(item.getItemId() == R.id.itRicerca){
-            //ricerca keyword
-        }else{
-            return super.onContextItemSelected(item);
-        }*/
-        return true;
     }
 
     /**
