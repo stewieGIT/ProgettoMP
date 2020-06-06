@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        session.setCurrentActivity(ActivityConstants.ACTIVITY_MAIN);
+
         final int REQUEST_CODE = 101;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // controllo se il permesso NON sia stato gia' dato
@@ -89,8 +91,15 @@ public class MainActivity extends AppCompatActivity {
                     case MessageConstants.MESSAGE_STATE_CHANGE:
                         switch (msg.arg1) {
                             case BluetoothChatService.STATE_CONNECTED:
-                                Intent intent=new Intent(MainActivity.this, ChatActivity.class);
-                                startActivity(intent);
+                                if(session.getCurrentActivity() != ActivityConstants.ACTIVITY_CHAT){
+                                    Intent intent=new Intent(MainActivity.this, ChatActivity.class);
+                                    startActivity(intent);
+                                }
+                                else{
+                                    Intent intent=new Intent(MainActivity.this, ChatActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                }
                                 break;
                             case BluetoothChatService.STATE_CONNECTING:
                                 showToast("Connessione...");
@@ -110,9 +119,8 @@ public class MainActivity extends AppCompatActivity {
 
         session.setmBluetoothChatService(new BluetoothChatService(MainActivity.this, mHandler));
         session.getmBluetoothChatService().start();
-        System.out.println("*********************RIFERIMENTO MAIN ACTIVITY*******************"+session.getmBluetoothChatService());
+
         holder = new Holder();
-        
     }
 
     /**
@@ -127,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         session.getmBluetoothChatService().stop();
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>THREAD STOPPED");
         session.getmBluetoothChatService().start();
     }
 

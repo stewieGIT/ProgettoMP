@@ -1,11 +1,13 @@
 package it.qrntine.chatbluetooth.bluetooth;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 
 public class BluetoothSession {
     private static BluetoothSession instance;
     private static BluetoothChatService mBluetoothChatService;
     private static BluetoothDevice device;
+    private static int currentActivity;
 
     private BluetoothSession(){
     }
@@ -31,5 +33,13 @@ public class BluetoothSession {
 
     public static void setDevice(BluetoothDevice device) {
         BluetoothSession.device = device;
+    }
+
+    public static void setCurrentActivity(int currentActivity) {
+        BluetoothSession.currentActivity = currentActivity;
+    }
+
+    public static int getCurrentActivity() {
+        return currentActivity;
     }
 }

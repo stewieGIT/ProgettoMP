@@ -43,6 +43,8 @@ public class ChatListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat_list);
         setTitle("Chat list"); //il titolo
 
+        session.setCurrentActivity(ActivityConstants.ACTIVITY_CHATLIST);
+
         BluetoothAdapter adapter = session.getmBluetoothChatService().getmAdapter();
 
         creaDB();

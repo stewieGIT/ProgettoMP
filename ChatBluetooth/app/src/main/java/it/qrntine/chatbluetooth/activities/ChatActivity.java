@@ -13,12 +13,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,12 +57,23 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     private AppDatabase db; //riferimento al db
     private List <Messaggio> messaggi; //lista messaggi relativi alla chat con il destinatario
     private BluetoothSession session = BluetoothSession.getInstance();
+    private boolean modCriptata;
 
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_chat);
         setTitle(session.getDevice().getName());
+
+<<<<<<< HEAD
+<<<<<<< HEAD
+        session.setCurrentActivity(ActivityConstants.ACTIVITY_CHAT);
+=======
+        modCriptata = false;
+>>>>>>> 7b7585a0410f5a4466c19ab7d6952d6435ced693
+=======
+        modCriptata = false;
+>>>>>>> 7b7585a0410f5a4466c19ab7d6952d6435ced693
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"), Locale.ITALY);
         data = calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH) + "/" +
@@ -123,6 +135,49 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(session.getmBluetoothChatService().getmConnectedThread() != null)
+            session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
+
+        if(session.getmBluetoothChatService().getmState() != 3){
+            holder.btnCSend.setEnabled(false);
+            holder.btnInviaMessaggio.setEnabled(false);
+        }
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        if(!newText.isEmpty()) {
+            ArrayList <Messaggio> tmp = new ArrayList <>();
+            for (Messaggio msg : messaggi) {
+                if (msg.testo.contains(newText)) {
+                    tmp.add(msg);
+                }
+            }
+            holder.rvChat.setAdapter(new ChatBluetoothAdapter(tmp));
+            holder.rvChat.getAdapter().notifyDataSetChanged();
+        }
+        else {
+            holder.rvChat.setAdapter(new ChatBluetoothAdapter(messaggi));
+            holder.rvChat.getAdapter().notifyDataSetChanged();
+            holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
+        }
+        return false;
+    }
+
     public void writeMessage(MetaMessaggio msg, boolean codifica) {
         Messaggio messaggio = new Messaggio();
 
@@ -164,6 +219,8 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         inserisci.start();
         holder.rvChat.getAdapter().notifyDataSetChanged();
         holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
+<<<<<<< HEAD
+=======
 
     }
 
@@ -186,9 +243,10 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
 
         if(session.getmBluetoothChatService().getmState() != 3){
-            holder.btnCSend.setEnabled(false);
-            holder.btnInviaMessaggio.setEnabled(false);
+            holder.ivModCriptata.setEnabled(false);
+            holder.ivInviaMessaggio.setEnabled(false);
         }
+>>>>>>> 7b7585a0410f5a4466c19ab7d6952d6435ced693
     }
 
     /**
@@ -215,46 +273,18 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                 AppDatabase.class, "messaggi").build();
     }
 
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        if(!newText.isEmpty()) {
-            ArrayList <Messaggio> tmp = new ArrayList <>();
-            for (Messaggio msg : messaggi) {
-                if (msg.testo.contains(newText)) {
-                    tmp.add(msg);
-                }
-            }
-            holder.rvChat.setAdapter(new ChatBluetoothAdapter(tmp));
-            holder.rvChat.getAdapter().notifyDataSetChanged();
-        }
-        else {
-            holder.rvChat.setAdapter(new ChatBluetoothAdapter(messaggi));
-            holder.rvChat.getAdapter().notifyDataSetChanged();
-            holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
-        }
-        return false;
-    }
-
-
-
     class Holder implements View.OnClickListener {
 
         private RecyclerView rvChat;
         private EditText etInserisciMessaggio;
-        private Button btnInviaMessaggio, btnCSend;
+        private ImageView ivInviaMessaggio, ivModCriptata;
 
         public Holder() {
             etInserisciMessaggio = findViewById(R.id.etInserisciMessaggio);
-            btnInviaMessaggio = findViewById(R.id.btnInviaMessaggio);
-            btnCSend = findViewById(R.id.btnCSend);
-            btnInviaMessaggio.setOnClickListener(this);
-            btnCSend.setOnClickListener(this);
+            ivInviaMessaggio = findViewById(R.id.ivInviaMessaggio);
+            ivModCriptata = findViewById(R.id.ivModCriptata);
+            ivInviaMessaggio.setOnClickListener(this);
+            ivModCriptata.setOnClickListener(this);
 
             rvChat = findViewById(R.id.rvChat);
             rvChat.setAdapter(new ChatBluetoothAdapter(messaggi));
@@ -272,7 +302,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
          */
         @Override
         public void onClick(View v) {
-            if (v.getId() == R.id.btnInviaMessaggio) { //manda messaggio non codificato
+            if (v.getId() == R.id.ivInviaMessaggio) { //manda messaggio non codificato
                 if (!etInserisciMessaggio.getText().toString().equals("")) {
                     String messaggioInserito = etInserisciMessaggio.getText().toString();
 
@@ -282,30 +312,32 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                         messaggioInserito = ParserMarkdown.parsing(messaggioInserito, n);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
                     }
 
-                    MetaMessaggio metaMessaggio = new MetaMessaggio();
-                    metaMessaggio.setTesto(messaggioInserito.getBytes());
-                    session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
+                    if (modCriptata) {
+                        codifica = new CodificaAES();
+                        MetaMessaggio metaMessaggio = codifica.codificaMessaggio(messaggioInserito);
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>MSG CRYPTED: " + metaMessaggio);
+                        session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
+                    } else {
+                        MetaMessaggio metaMessaggio = new MetaMessaggio();
+                        metaMessaggio.setTesto(messaggioInserito.getBytes());
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>MSG UNCRYPTED: " + metaMessaggio);
+                        session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
+                    }
                     etInserisciMessaggio.setText("");
                 }
             }
-            if (v.getId() == R.id.btnCSend) { //manda messaggio codificato
-                if (!etInserisciMessaggio.getText().toString().equals("")) {
-                    codifica = new CodificaAES();
 
-                    String messaggioInserito = etInserisciMessaggio.getText().toString();
-
-                    if (!messaggioInserito.matches("^(<(.+?)*>)")) {  //se il messaggio non e' in formato html, verifico se ha notazioni markdown
-                        int n;
-                        n = ParserMarkdown.numParser(messaggioInserito);
-                        messaggioInserito = ParserMarkdown.parsing(messaggioInserito, n);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
-                    }
-
-                    MetaMessaggio metaMessaggio = codifica.codificaMessaggio(messaggioInserito);
-
-                    System.out.println(">>>>>>>>>>>>>>>>>>>>MSG CODED: " + metaMessaggio);
-
-                    session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
-                    etInserisciMessaggio.setText("");
+            if (v.getId() == R.id.ivModCriptata) { //manda messaggio codificato
+                modCriptata = !modCriptata;
+                String msg;
+                if (modCriptata) {
+                    holder.ivModCriptata.setImageResource(R.drawable.aes);
+                    msg="Crittografia AES attivata.";
+                    Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_LONG).show();
+                } else {
+                    holder.ivModCriptata.setImageResource(R.drawable.no_aes);
+                    msg="Crittografia AES disattivata.";
+                    Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_LONG).show();
                 }
             }
         }
