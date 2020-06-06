@@ -67,7 +67,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         session.setCurrentActivity(ActivityConstants.ACTIVITY_CHAT);
+=======
+        modCriptata = false;
+>>>>>>> 7b7585a0410f5a4466c19ab7d6952d6435ced693
 =======
         modCriptata = false;
 >>>>>>> 7b7585a0410f5a4466c19ab7d6952d6435ced693
