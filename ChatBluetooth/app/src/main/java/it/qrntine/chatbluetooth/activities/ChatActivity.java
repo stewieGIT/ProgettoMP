@@ -65,19 +65,9 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         setContentView(R.layout.activity_chat);
         setTitle(session.getDevice().getName());
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         session.setCurrentActivity(ActivityConstants.ACTIVITY_CHAT);
-=======
+
         modCriptata = false;
->>>>>>> 7b7585a0410f5a4466c19ab7d6952d6435ced693
-=======
-        modCriptata = false;
->>>>>>> 7b7585a0410f5a4466c19ab7d6952d6435ced693
-=======
-        modCriptata = false;
->>>>>>> 7b7585a0410f5a4466c19ab7d6952d6435ced693
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"), Locale.ITALY);
         data = calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH) + "/" +
@@ -152,8 +142,10 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
 
         if(session.getmBluetoothChatService().getmState() != 3){
-            holder.btnCSend.setEnabled(false);
-            holder.btnInviaMessaggio.setEnabled(false);
+            holder.ivModCriptata.setEnabled(false);
+            holder.ivInviaMessaggio.setEnabled(false);
+            holder.ivInviaMessaggio.setAlpha(0.3f);
+            holder.ivModCriptata.setAlpha(0.3f);
         }
     }
 
@@ -223,8 +215,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         inserisci.start();
         holder.rvChat.getAdapter().notifyDataSetChanged();
         holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
-<<<<<<< HEAD
-=======
 
     }
 
@@ -232,25 +222,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     protected void onStop() {
         super.onStop();
         finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        finish();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(session.getmBluetoothChatService().getmConnectedThread() != null)
-            session.getmBluetoothChatService().getmConnectedThread().setmHandler(mHandler);
-
-        if(session.getmBluetoothChatService().getmState() != 3){
-            holder.ivModCriptata.setEnabled(false);
-            holder.ivInviaMessaggio.setEnabled(false);
-        }
->>>>>>> 7b7585a0410f5a4466c19ab7d6952d6435ced693
     }
 
     /**
