@@ -286,12 +286,21 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                         messaggioInserito = ParserMarkdown.parsing(messaggioInserito, n);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
                     }
 
-                    MetaMessaggio metaMessaggio = new MetaMessaggio();
-                    metaMessaggio.setTesto(messaggioInserito.getBytes());
-                    session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
+                    if (modCriptata) {
+                        codifica = new CodificaAES();
+                        MetaMessaggio metaMessaggio = codifica.codificaMessaggio(messaggioInserito);
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>MSG CRYPTED: " + metaMessaggio);
+                        session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
+                    } else {
+                        MetaMessaggio metaMessaggio = new MetaMessaggio();
+                        metaMessaggio.setTesto(messaggioInserito.getBytes());
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>MSG UNCRYPTED: " + metaMessaggio);
+                        session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
+                    }
                     etInserisciMessaggio.setText("");
                 }
             }
+
             if (v.getId() == R.id.ivModCriptata) { //manda messaggio codificato
                 modCriptata = !modCriptata;
                 String msg;
