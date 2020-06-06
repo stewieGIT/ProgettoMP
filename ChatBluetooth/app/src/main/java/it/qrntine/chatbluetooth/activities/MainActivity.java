@@ -104,11 +104,8 @@ public class MainActivity extends AppCompatActivity {
                             case BluetoothChatService.STATE_CONNECTING:
                                 showToast("Connessione...");
                                 break;
-                            case BluetoothChatService.STATE_LISTEN:
-                                showToast("Listen...");     //P8 si mentre il RedMi non lo fa all'avvio
-                            case BluetoothChatService.STATE_NONE:
-                                showToast("Non connesso...");
-                                break;
+                            case BluetoothChatService.STATE_LISTEN: break;
+                            case BluetoothChatService.STATE_NONE: break;
 
                         }
                         break;
@@ -134,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        if(session.getErrorNum() == ErrorConstants.ERROR_USER_DISCONNECTED){
+            Toast.makeText(MainActivity.this, R.string.error_user_disconnected, Toast.LENGTH_LONG).show();
+        }
         session.getmBluetoothChatService().stop();
         session.getmBluetoothChatService().start();
     }

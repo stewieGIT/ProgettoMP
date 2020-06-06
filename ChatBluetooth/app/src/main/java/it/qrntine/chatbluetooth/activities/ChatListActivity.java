@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,7 +42,7 @@ public class ChatListActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
-        setTitle("Chat list"); //il titolo
+        setTitle("Chat List"); //il titolo
 
         session.setCurrentActivity(ActivityConstants.ACTIVITY_CHATLIST);
 
@@ -76,8 +77,10 @@ public class ChatListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if(session.getErrorNum() == ErrorConstants.ERROR_USER_DISCONNECTED){
+            Toast.makeText(ChatListActivity.this, R.string.error_user_disconnected, Toast.LENGTH_LONG).show();
+        }
         session.getmBluetoothChatService().stop();
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>THREAD STOPPED");
         session.getmBluetoothChatService().start();
     }
 

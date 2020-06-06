@@ -4,4 +4,6 @@
     <string name="chat">Chat</string>
     <string name="btnSend">Send</string>
     <string name="hint_message">Insert Message</string>
+    <string name="menu_chatlist_delete">Delete</string>
+    <string name="error_user_disconnected">The user has disconnected</string>
 </resources>

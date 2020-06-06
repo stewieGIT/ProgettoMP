@@ -8,6 +8,7 @@ public class BluetoothSession {
     private static BluetoothChatService mBluetoothChatService;
     private static BluetoothDevice device;
     private static int currentActivity;
+    private static int errorNum = 0;
 
     private BluetoothSession(){
     }
@@ -41,5 +42,13 @@ public class BluetoothSession {
 
     public static int getCurrentActivity() {
         return currentActivity;
+    }
+
+    public static void setErrorNum(int errorNum) {
+        BluetoothSession.errorNum = errorNum;
+    }
+
+    public static int getErrorNum() {
+        return errorNum;
     }
 }

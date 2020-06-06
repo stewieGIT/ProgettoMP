@@ -121,6 +121,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                     case MessageConstants.MESSAGE_TOAST:
                         break;
                     case MessageConstants.MESSAGE_OBJECT_ERROR_READ:
+                        session.setErrorNum(ErrorConstants.ERROR_USER_DISCONNECTED);
                         finish();
                         break;
                 }
