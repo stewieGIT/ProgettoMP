@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,9 +72,9 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
 
         if(session.getErrorNum() == ErrorConstants.ERROR_USER_DISCONNECTED){ //annunciamo che il destinatario si è disconnesso
             Toast.makeText(ChatListActivity.this, R.string.error_user_disconnected, Toast.LENGTH_LONG).show();
+            session.getmBluetoothChatService().stop(); //riavviamo il servizio di chat
+            session.getmBluetoothChatService().start();
         }
-        session.getmBluetoothChatService().stop(); //riavviamo il servizio di chat
-        session.getmBluetoothChatService().start();
     }
 
     @Override
@@ -111,9 +112,18 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         return false;
     }
 
-    class Holder {
+    class Holder implements View.OnClickListener {
+        Button btnTabRicerca, btnTabChat;
+        TextView tvTueConv;
         RecyclerView rvChatList;
+
         public Holder(){
+
+            tvTueConv=findViewById(R.id.tvTueConversazioni);
+            btnTabChat=findViewById(R.id.btnTabChat);
+            btnTabRicerca=findViewById(R.id.btnTabRicerca);
+            btnTabChat.setEnabled(false);
+            btnTabRicerca.setOnClickListener(this);
             rvChatList=findViewById(R.id.rvChatList);
 
             rvChatList.setAdapter(new ChatListAdapter(chatDevices));
@@ -121,6 +131,13 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
 
             DecoratorRecyclerView decorator = new DecoratorRecyclerView(10);
             rvChatList.addItemDecoration(decorator);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if(v.getId() == R.id.btnTabRicerca) {
+                onBackPressed();
+            }
         }
     }
 
@@ -147,13 +164,13 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         public void onBindViewHolder(@NonNull ChatListAdapter.ChatHolder holder, int position) {
             holder.tvChat.setText(data.get(position).getName());
             if(checkExistance(data.get(position), selectedChats)){ //se esiste nell'array selezionati evidenzialo
-                 holder.itemView.setBackgroundColor(getColor(R.color.colorBGSelected));
-                 holder.cvChatList.setCardBackgroundColor(getColor(R.color.colorSelected));
+                 //holder.itemView.setBackgroundColor(getColor(R.color.colorBGSelected));
+                 holder.cvChatList.setCardBackgroundColor(getColor(R.color.colorDestinatario));
             }
             else{ //altrimenti niente effetto visivo
 
-                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                holder.cvChatList.setCardBackgroundColor(getColor(R.color.colorDestinatario));
+                //holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                holder.cvChatList.setCardBackgroundColor(getColor(R.color.colorSelected));
             }
         }
 

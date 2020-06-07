@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private AppDatabase db;
     private Holder holder;
     private Handler mHandler;
+    private static boolean RECEIVER_REGISTERED = false;
     private BluetoothSession session =BluetoothSession.getInstance();
     private List<String> devices = new ArrayList<>();   //serve solo per la stampa dei nomi nella recycler (DEBUG)
     private List<BluetoothDevice> objDevices = new ArrayList<>();   //lista di oggetti Bluetooth device
@@ -133,19 +134,24 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if(session.getErrorNum() == ErrorConstants.ERROR_USER_DISCONNECTED){
             Toast.makeText(MainActivity.this, R.string.error_user_disconnected, Toast.LENGTH_LONG).show();
+            session.getmBluetoothChatService().stop();
+            session.getmBluetoothChatService().start();
         }
-        session.getmBluetoothChatService().stop();
-        session.getmBluetoothChatService().start();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mReceiver);
+        if(RECEIVER_REGISTERED) {
+            unregisterReceiver(mReceiver);
+            RECEIVER_REGISTERED = false;
+        }
+
     }
 
     class Holder implements View.OnClickListener{
-        Button btnSearch, btnChat;
+        Button btnSearch, btnChat, btnAvviaRicerca;
+        TextView tvRisultatiRicerca;
         CardView cvDevice;
         RecyclerView rvDevices;
         RecyclerView.Adapter rvAdapter;
@@ -153,9 +159,12 @@ public class MainActivity extends AppCompatActivity {
         public Holder(){
             btnSearch=findViewById(R.id.btnSearch);
             btnChat=findViewById(R.id.btnChat);
+            btnAvviaRicerca=findViewById(R.id.btnAvviaRicerca);
+            tvRisultatiRicerca=findViewById(R.id.tvRisultatiRicerca);
             rvDevices=findViewById(R.id.rvDevices);
             cvDevice = findViewById(R.id.cvDevice);
-            btnSearch.setOnClickListener(this);
+            btnSearch.setEnabled(false);
+            btnAvviaRicerca.setOnClickListener(this);
             btnChat.setOnClickListener(this);
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
             rvDevices.setLayoutManager(layoutManager);
@@ -221,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case (R.id.btnSearch):
+                case (R.id.btnAvviaRicerca):
                     if (BluetoothAdapter.getDefaultAdapter().isDiscovering()) {
                         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
                         showToast("Scansione interrotta");
@@ -232,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
                         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
                         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
                         registerReceiver(mReceiver, filter);
+                        RECEIVER_REGISTERED = true;
                         //quando clicco su ricerca azzero la lista dei nomi. Vanno gestiti diversamente i dispositivi gia' associati
                         if(devices.size() > 0) {
                             devices.clear();

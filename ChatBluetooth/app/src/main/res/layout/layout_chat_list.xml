@@ -8,9 +8,10 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvChatList"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/colorDestinatario"
+        android:layout_margin="8dp"
+        app:cardBackgroundColor="@color/colorBGSelected"
         app:cardCornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,16 +28,15 @@
                 android:id="@+id/ivChat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
                 app:srcCompat="@drawable/chat" />
 
             <TextView
                 android:id="@+id/tvChat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_weight="1"
-                android:textColor="@android:color/black"
-                android:textSize="18sp" />
+                android:textSize="20sp"
+                android:layout_margin="8dp"/>
 
         </LinearLayout>
 

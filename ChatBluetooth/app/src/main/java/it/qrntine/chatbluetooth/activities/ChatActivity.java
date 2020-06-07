@@ -138,7 +138,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        finish();
     }
 
     @Override

@@ -4,25 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
     <Button
         android:id="@+id/btnSearch"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:background="@color/colorPrimary"
         android:text="@string/search"
+        android:textColor="@color/colorBianco"
+        app:layout_constraintEnd_toStartOf="@+id/btnChat"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btnChat"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:background="@color/colorPrimary"
         android:text="@string/chat"
+        android:textColor="@color/colorBianco"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnSearch"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,9 +32,34 @@
         android:id="@+id/rvDevices"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="16dp"
+        android:background="@color/colorTrasparente"
+        app:layout_constraintBottom_toTopOf="@+id/btnAvviaRicerca"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnChat" />
+        app:layout_constraintTop_toBottomOf="@+id/tvRisultatiRicerca" />
+
+    <Button
+        android:id="@+id/btnAvviaRicerca"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="Avvia ricerca"
+        android:layout_margin="8dp"
+        android:textColor="@color/colorBianco"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvRisultatiRicerca"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Risultati ricerca:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnSearch" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

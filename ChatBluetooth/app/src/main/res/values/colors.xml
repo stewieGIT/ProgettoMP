@@ -8,4 +8,6 @@
     <color name="colorDestinatario">#ADE5FF</color>
     <color name="colorSelected">#FFDCF4FF</color>
     <color name="colorBGSelected">#FFE7F7FF</color>
+    <color name="colorTrasparente">#00FFFFFF</color>
+    <color name="colorBianco">#FFFFFF</color>
 </resources>
