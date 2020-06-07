@@ -85,24 +85,26 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if(item.getItemId() == R.id.delete_menu_chatlist){
-            if(selectedChats.size() > 0){ //se esistono elementi selezionati cancelliamo le chat selezionate
-                for(BluetoothDevice device: selectedChats){
-                    CancellaThreadDB can = new CancellaThreadDB(db, device.getAddress());
-                    Thread cancella = new Thread(can);
-                    cancella.start();
-                    try {
-                        cancella.join();
-                        chatDevices.remove(device);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+            if(selectedChats != null){
+                if(selectedChats.size() > 0){ //se esistono elementi selezionati cancelliamo le chat selezionate
+                    for(BluetoothDevice device: selectedChats){
+                        CancellaThreadDB can = new CancellaThreadDB(db, device.getAddress());
+                        Thread cancella = new Thread(can);
+                        cancella.start();
+                        try {
+                            cancella.join();
+                            chatDevices.remove(device);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    selectedChats.clear(); //puliamo l'array
+                    Toast.makeText(ChatListActivity.this, "Chat deleted", Toast.LENGTH_LONG).show();
+                    holder.rvChatList.getAdapter().notifyDataSetChanged();
                 }
-                clearArray(selectedChats); //puliamo l'array
-                Toast.makeText(ChatListActivity.this, "Chat deleted", Toast.LENGTH_LONG).show();
-                holder.rvChatList.getAdapter().notifyDataSetChanged();
-            }
-            else{
-                Toast.makeText(ChatListActivity.this, "No chat to delete", Toast.LENGTH_LONG).show();
+                else{
+                    Toast.makeText(ChatListActivity.this, "No chat to delete", Toast.LENGTH_LONG).show();
+                }
             }
         }
 
@@ -168,8 +170,8 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
 
             session.setDevice(data.get(position));
             session.getmBluetoothChatService().connect(data.get(position), true);
-            clearArray(selectedChats); //pulisci gli array per il passaggio all'activity chat
-            clearArray(chatDevices);
+            selectedChats.clear(); //pulisci gli array per il passaggio all'activity chat
+            chatDevices.clear();
             Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
             startActivity(intent);
         }
@@ -257,10 +259,5 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         return false;
     }
 
-    //pulisci l'array
-    public void clearArray(ArrayList<BluetoothDevice> array){
-        for(BluetoothDevice d: array){
-            array.remove(d);
-        }
     }
-}
+
