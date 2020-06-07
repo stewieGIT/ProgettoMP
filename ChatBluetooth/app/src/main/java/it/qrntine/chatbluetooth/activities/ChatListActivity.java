@@ -177,7 +177,8 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
             chatDevices.clear();
             Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
             startActivity(intent);
-        }}
+            }
+        }
 
         @Override
         public boolean onLongClick(View v) {

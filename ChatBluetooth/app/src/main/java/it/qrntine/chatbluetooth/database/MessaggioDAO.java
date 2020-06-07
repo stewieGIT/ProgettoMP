@@ -13,17 +13,10 @@ public interface MessaggioDAO {
     @Insert
     void inserisciMessaggio(Messaggio messaggio);
 
-    @Insert
-    void inserisciMessaggi(List<Messaggio> messaggi);
 
     @Delete
     void cancellaMessaggio(Messaggio messaggio);
 
-    @Delete
-    void cancellaMessaggi(List<Messaggio> messaggi);
-
-    @Query("SELECT * FROM messaggio")
-    List<Messaggio> scaricaMessaggi();
 
     @Query("SELECT DISTINCT * FROM messaggio WHERE (Destinatario = :destinatario AND Mittente = :mittente) OR " +
             "(Destinatario = :mittente AND Mittente = :destinatario)")

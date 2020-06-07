@@ -2,6 +2,9 @@ package it.qrntine.chatbluetooth.activities;
 
 import android.bluetooth.BluetoothAdapter;
 
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,13 +43,15 @@ import it.qrntine.chatbluetooth.bluetooth.MessageConstants;
 import it.qrntine.chatbluetooth.codifica.CodificaAES;
 import it.qrntine.chatbluetooth.codifica.MetaMessaggio;
 import it.qrntine.chatbluetooth.database.AppDatabase;
+import it.qrntine.chatbluetooth.database.CancellaMessaggiThreadDB;
+import it.qrntine.chatbluetooth.database.CancellaThreadDB;
 import it.qrntine.chatbluetooth.database.InserisciThreadDB;
 import it.qrntine.chatbluetooth.database.Messaggio;
 import it.qrntine.chatbluetooth.database.QueryThreadDB;
 import it.qrntine.chatbluetooth.decorator.DecoratorRecyclerView;
 import it.qrntine.chatbluetooth.markdown.ParserMarkdown;
 
-public class ChatActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class ChatActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, MenuItem.OnMenuItemClickListener {
 
     private String data;
     private String time;
@@ -57,6 +62,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     private List <Messaggio> messaggi; //lista messaggi relativi alla chat con il destinatario
     private BluetoothSession session = BluetoothSession.getInstance();
     private boolean modCriptata;
+    private ArrayList<Messaggio> selectedMessages = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -150,6 +156,40 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if(item.getItemId() == R.id.delete_menu){
+            System.out.println("*************SONO NELLA ONMENUITEMCLICK");
+            if(selectedMessages != null){
+                System.out.println("*************SELMESSAGES NOT NULL");
+                if(selectedMessages.size() > 0){ //se esistono elementi selezionati cancelliamo le chat selezionate
+                    System.out.println("*************SELSIZE>0");
+                    for(Messaggio messaggio: selectedMessages){
+                        CancellaMessaggiThreadDB can = new CancellaMessaggiThreadDB(db, selectedMessages);
+                        Thread cancella = new Thread(can);
+                        cancella.start();
+                        try {
+                            cancella.join();
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("*************MESSAGEREMOVE"+ messaggio.testo);
+                        messaggi.remove(messaggio);
+                    }
+                    selectedMessages.clear(); //puliamo l'array
+                    Toast.makeText(ChatActivity.this, "Chat deleted", Toast.LENGTH_LONG).show();
+                    holder.rvChat.getAdapter().notifyDataSetChanged();
+                }
+                else{
+                    Toast.makeText(ChatActivity.this, "No chat to delete", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
     }
@@ -159,7 +199,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         if(!newText.isEmpty()) {
             ArrayList <Messaggio> tmp = new ArrayList <>();
             for (Messaggio msg : messaggi) {
-                if (msg.testo.contains(newText)) {
+                if (msg.testo.toLowerCase().contains(newText.toLowerCase())) {
                     tmp.add(msg);
                 }
             }
@@ -293,7 +333,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
     /*
     /*adapter per il recyclerview*/
-    class ChatBluetoothAdapter extends RecyclerView.Adapter <ChatBluetoothAdapter.ChatHolder> {
+    class ChatBluetoothAdapter extends RecyclerView.Adapter <ChatBluetoothAdapter.ChatHolder> implements View.OnLongClickListener,View.OnClickListener {
 
         private List <Messaggio> dati;
 
@@ -309,6 +349,8 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         public ChatBluetoothAdapter.ChatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             RelativeLayout rl = (RelativeLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_chat,
                     parent, false);
+            rl.setOnClickListener(this);
+            rl.setOnLongClickListener(this);
             return new ChatHolder(rl);
         }
 
@@ -344,6 +386,15 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                     System.out.println("SINISTRA");
                 }
             }
+            if(checkExistance(dati.get(position), selectedMessages)){ //se esiste nell'array selezionati evidenzialo
+                holder.itemView.setBackgroundColor(getColor(R.color.colorBGSelected));
+                //holder.cvChat.setCardBackgroundColor(getColor(R.color.colorSelected));
+            }
+            else{ //altrimenti niente effetto visivo
+
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                //holder.cvChat.setCardBackgroundColor(getColor(R.color.colorDestinatario));
+            }
         }
 
         @Override
@@ -351,6 +402,27 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             if (dati != null)
                 return dati.size();
             return 0;
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
+            if(selectedMessages.size() > 0) onLongClick(v);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
+            if(!checkExistance(dati.get(position), selectedMessages)){ //se l'elemento non esiste aggiungilo
+                selectedMessages.add(dati.get(position));
+                Toast.makeText(ChatActivity.this, "Selected Chat", Toast.LENGTH_LONG).show();
+                notifyDataSetChanged();
+            }else{ //altrimenti no
+                selectedMessages.remove(dati.get(position));
+                Toast.makeText(ChatActivity.this, "Unselected Chat", Toast.LENGTH_LONG).show();
+                notifyDataSetChanged();
+            }
+            return true;
         }
 
 
@@ -377,12 +449,22 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         MenuItem searchItem = menu.findItem(R.id.search_menu);
-
+        MenuItem deleteItem = menu.findItem(R.id.delete_menu);
+        deleteItem.setOnMenuItemClickListener(this);
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search Message");
         searchView.setOnQueryTextListener(this);
 
         return true;
+    }
+
+    public boolean checkExistance(Messaggio message, ArrayList<Messaggio> array){
+        for(Messaggio d: array){
+            if(d.equals(message)){
+                return true;
+            }
+        }
+        return false;
     }
 }
 
