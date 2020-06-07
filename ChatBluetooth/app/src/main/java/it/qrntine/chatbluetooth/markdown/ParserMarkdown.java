@@ -12,152 +12,145 @@ import java.util.regex.Pattern;
  *
  *   GRASSETTO              ...**string**...          <b>string</b>
  *   CORSIVO                ...*string*...            <em>string</em>
- *   LIST                   nameList:*item1*item2...  <ul>nameList:<li>item1</li><li>item2</li>...</ul>
  *   HEADER                 #string                   <h1>string</h1>
  *
  */
 
 public class ParserMarkdown {
 
-    private static final String regexBold = "(.+?)*(\\*\\*)(.+?)(\\*\\*)(.+?)*"; // ..**...**..
-    private static final String regexCursive = "(.+?)*(\\*)(.+?)(\\*)(.+?)*";  // ..*...*..
-    private static final String regexList = "(^(.+?)(\\:)((\\*){1}(.+?))*)"; // ..:*...*...
-    private static final String regexHeader = "^(\\#{1})(.+?)*";    // #...
+    /*
+     * REGEX CASI PARSING
+     */
+    public static final String splitterBold = "(.+)*((\\*\\*)(.+)(\\*\\*)(.+))*"; // ..**...**..
+    //public static final String splitterCursive = "((\\*?)(.+?)(\\*?))*";  // ..*...*..
+    public static final String splitterCursive = "(.+)*((\\*{1})(.+)(\\*{1}))*";
+    public static final String splitterHeader = "(.+)*((#)(.+)(#))*";
 
-    //funzione che ritorna l'int da usare nella switch del metodo parsing
-    public static int numParser(String stringa) {
+    /*
+     * REGEX MARKERS
+     */
+    public static final String markerBold = "(\\*\\*)";
+    public static final String markerEmphasis = "(\\*)";
+    public static final String markerHeader = "(#)";
 
-        String[] regExpressions = {regexBold, regexCursive, regexList, regexHeader};
+    /*
+     * TAG HTML
+     */
+    public static final String startTagBold = "<b>";
+    public static final String endTagBold = "</b>";
 
-        List<Integer> resMatches = new ArrayList<>();   //uso una list per gestire eventuali casi di matches multipli
+    public static final String startTagEmphasis = "<em>";
+    public static final String endTagEmphasis = "</em>";
 
-        for (int i=0; i<regExpressions.length; i++) {
-            Pattern pattern = Pattern.compile(regExpressions[i]);
-            if (pattern.matcher(stringa).matches()) {
-                resMatches.add(i);
-                //return i; //usando regex piu' 'esclusive' e' possibile ritornare direttamente l'intero senza creare resMatches
-            }
+    public static final String startTagHeader = "<h1>";
+    public static final String endTagHeader = "</h1>";
+
+
+    /***
+     * (PREDISPOSIZIONE)
+     * Indica quale case va effettuato nel metodo parserString
+     * @param msg
+     * @return int
+     */
+    public static int selectParser(String msg) {
+
+        String[] splitters = {splitterBold, splitterCursive, splitterHeader};
+        for (int i=0; i<splitters.length; i++) {
+            Pattern pattern = Pattern.compile(splitters[i]);
+            if (pattern.matcher(msg).matches()) return i+1;
         }
+        return 0;
 
-        if(resMatches.size() == 1) return resMatches.get(0);    //se ho trovato un singolo match, ritorno il numero corrispondente al case
-
-        if (resMatches.contains(1) && resMatches.contains(2)) return 2;   //caso in cui ho 2 match: in alcuni input la regexList(case: 2) e la regexCursive(case: 1) possono matchare entrambe, scelgo la list (return 2)
-
-        return 10;	//caso default
     }
 
+    /***
+     * Effettua il parsing di markdown relativi al grassetto, in tag html (e.g. msg = "**si**", msgParsato = "<b>si</b>").
+     * @param msg
+     * @return msgParsato
+     */
+    public static String parserString(String msg, int caso) {
 
-    public static String parsing(String stringa, int n) {
-        String subMsg = "", markMsg = "", finalString = "";
-        String[] listaMsg;
-        Pattern pat;
+        System.out.println("Messaggio inserito: \n" + msg);
 
-        switch(n) {
+        String msgParsato = "";
+        String[] lista;
 
-            case(0):
-                //PARSER BOLD	(**stringa**)
-                pat = Pattern.compile(regexBold);
-                if (pat.matcher(stringa).matches()) {
-                    System.out.println("**************MATCH BOLD OK**********");
-                    if(stringa.startsWith("**")) {
-                        listaMsg = stringa.split("\\*\\*");
-                        for(int i=0; i<listaMsg.length; i++) {
-                            if(i%2 == 0) {
-                                subMsg += listaMsg[i];
-                            } else {
-                                subMsg += "<b>"+listaMsg[i]+"</b>";
-                            }
-                        }
-                    } else {
-                        listaMsg = stringa.split("\\*\\*");
-                        for(int j=0; j<listaMsg.length; j++) {
-                            if(j==listaMsg.length-1) {
-                                subMsg += "<b>"+listaMsg[j]+"</b>";
-                                continue;
-                            }
-                            if(j%2 == 0) {
-                                subMsg += listaMsg[j];
-                            } else {
-                                subMsg += "<b>"+listaMsg[j]+"</b>";
-                            }
-                        }
-                    }
-                    finalString = subMsg;
-                }
+        String startTag;
+        String endTag;
+        String strRegex;
+
+        switch (caso) {
+            case 1:
+                //caso bold
+                startTag = startTagBold;
+                endTag = endTagBold;
+                strRegex = markerBold;
                 break;
 
-            case(1):
-                //PARSER CURSIVE	(*stringa*)
-                //if(stringa.contains("*")) {
-                pat = Pattern.compile(regexCursive);
-                if(pat.matcher(stringa).matches()){
-                    listaMsg = stringa.split("\\*");
-                    if(listaMsg[0] != "*") {
-                        for(int i=0; i<listaMsg.length; i++) {
-                            if(i%2 == 0) {
-                                subMsg += listaMsg[i];
-                            } else {
-                                subMsg += "<em>"+listaMsg[i]+"</em>";
-                            }
-                        }
-                    } else if (listaMsg[0] == "*") {
-                        for(int i=0; i<listaMsg.length; i++) {
-                            if(i==listaMsg.length-1) {
-                                subMsg += "<em>"+listaMsg[i]+"</em>";
-                                continue;
-                            }
-                            if(i%2 != 0) {
-                                subMsg += listaMsg[i];
-                            } else {
-                                subMsg += "<em>"+listaMsg[i]+"</em>";
-                            }
-                        }
-                    }
-                    finalString = subMsg;
-                }
+            case 2:
+                //caso corsivo
+                startTag = startTagEmphasis;
+                endTag = endTagEmphasis;
+                strRegex = markerEmphasis;
                 break;
 
-            case(2):
-                //PARSER LISTA	(Nomelista:*item1*item2...)
-                pat = Pattern.compile(regexList);
-                if (pat.matcher(stringa).matches()) {
-                    System.out.println("**************MATCH LIST OK**********");
-                    listaMsg = stringa.split("(\\*)");
-                    subMsg = "";
-                    for(int i=0; i<(listaMsg.length); i++) {
-                        //if(i==0) continue;	//se la lista inizia per * il primo elemento che ottengo e' '' quindi lo scarto
-                        if(i==0) {
-                            subMsg += "<ul>"+listaMsg[i];
-                        } else {
-                            System.out.println("**************MATCH LIST OK********** "+listaMsg[i]);
-                            subMsg += "<li>"+listaMsg[i]+"</li>";
-                        }
-                    }
-                    System.out.println("**************MATCH LIST res********** "+subMsg);
-                    finalString = subMsg+"</ul>";
-                    System.out.println("**************MATCH LIST res********** "+finalString);
-                }
-                break;
-
-            case(3):
-                //PARSER HEADER	(#stringa)
-                pat = Pattern.compile(regexHeader);
-                if (pat.matcher(stringa).matches()) {
-                    System.out.println("**************MATCH Header1 OK**********");
-                    subMsg = stringa.substring(stringa.indexOf("#") + 1);
-                    finalString = "<h1>" + subMsg + "</h1>";
-                }
-                break;
-
-            case(10):
-                finalString = stringa;
+            case 3:
+                //caso header
+                startTag = startTagHeader;
+                endTag = endTagHeader;
+                strRegex = markerHeader;
                 break;
 
             default:
-                finalString = stringa;
-                break;
+                //nessun caso da parsare
+                return msg;
 
-        }//END SWITCH
-        return finalString;
-    }//END PARSING
-}//END CLASS
+        }
+
+        lista = (msg+" ").split(strRegex);	//ho aggiunto lo spazio " " altrimenti non riconosce l'ultimo nei casi col ** alla fine (e.g. "prova ancora **si** o **no**")
+        //System.out.println("Lungh: " + lista.length);
+        for(int i=0; i<lista.length; i++) {
+            //System.out.println("- " + i + ": " + lista[i]);
+        }
+
+        // CASO SOTTOSTRINGHE DISPARI
+        if((lista.length % 2) != 0) {	//se ottengo un numero dispari di sottostringhe, metto il tag bold prima e dopo ogni sottostringa pari
+            for(int i=0; i<lista.length; i++) {
+                if((i%2) == 0) {
+                    msgParsato += lista[i];
+                } else {
+                    msgParsato += startTag + lista[i] + endTag;
+                }
+            }
+        } // END CASO SOTTOSTRINGHE DISPARI
+
+
+        // CASO SOTTOSTRINGHE PARI
+        if((lista.length % 2) == 0) {	//se ottengo un numero pari di sottostringhe, metto il tag bold prima e dopo ogni sottostringa eccetto l'ultima pari
+
+			/*	NON VA BENE
+			if(lista.length == 2) {		//caso di singola parola: **si**   ->   non entro proprio nel for
+				msgParsato += startTag + lista[1] + endTag;
+				System.out.println("Messaggio parsato:  \n" + msgParsato);
+				return msgParsato;
+			}
+			*/
+
+            for(int i=0; i<lista.length; i++) {
+                if(i == lista.length-1) {	//caso: **si** **no   ->   devo escludere gli ultimi **
+                    msgParsato += lista[i];
+                    break;
+                }
+                if((i%2) == 0) {
+                    msgParsato += lista[i];
+                } else {
+                    msgParsato += startTag + lista[i] + endTag;
+                }
+            }
+        } // END CASO SOTTOSTRINGHE PARI
+
+        System.out.println("Messaggio parsato:  \n" + msgParsato);
+
+        return msgParsato;
+    } // END parser
+}

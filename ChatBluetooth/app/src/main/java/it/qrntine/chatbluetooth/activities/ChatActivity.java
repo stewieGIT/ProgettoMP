@@ -260,12 +260,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                 if (!etInserisciMessaggio.getText().toString().equals("")) {
                     String messaggioInserito = etInserisciMessaggio.getText().toString();
 
-                    if (!messaggioInserito.matches("^(<(.+?)*>)")) {  //se il messaggio non e' in formato html, verifico se ha notazioni markdown
-                        int n;
-                        n = ParserMarkdown.numParser(messaggioInserito);
-                        messaggioInserito = ParserMarkdown.parsing(messaggioInserito, n);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
-                    }
-
                     if (modCriptata) {
                         codifica = new CodificaAES();
                         MetaMessaggio metaMessaggio = codifica.codificaMessaggio(messaggioInserito);
@@ -320,11 +314,23 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
         @Override
         public void onBindViewHolder(@NonNull ChatBluetoothAdapter.ChatHolder holder, int position) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                holder.tvMessaggio.setText(Html.fromHtml(dati.get(position).testo, Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                holder.tvMessaggio.setText(dati.get(position).testo);
+
+            String msg = (dati.get(position).testo);
+
+            if (!msg.matches("^(<(.+?)*>)")) {  //se il messaggio non e' in formato html, verifico se ha notazioni markdown
+                int n;
+                for(int i=1; i<4; i++) {
+                    msg = ParserMarkdown.parserString(msg, i);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
+                }
+
             }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                holder.tvMessaggio.setText(Html.fromHtml(msg, Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                holder.tvMessaggio.setText(msg);
+            }
+
             holder.tvData.setText(dati.get(position).ora);
             //serve per fare il display dei messaggi
             if (dati.get(position).mittente != null) {
