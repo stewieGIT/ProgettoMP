@@ -168,14 +168,16 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         @Override
         public void onClick(View v) {
             int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
-
+            if(selectedChats.size() > 0){
+               onLongClick(v);
+            } else{
             session.setDevice(data.get(position));
             session.getmBluetoothChatService().connect(data.get(position), true);
             selectedChats.clear(); //pulisci gli array per il passaggio all'activity chat
             chatDevices.clear();
             Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
             startActivity(intent);
-        }
+        }}
 
         @Override
         public boolean onLongClick(View v) {
