@@ -147,11 +147,12 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         public void onBindViewHolder(@NonNull ChatListAdapter.ChatHolder holder, int position) {
             holder.tvChat.setText(data.get(position).getName());
             if(checkExistance(data.get(position), selectedChats)){ //se esiste nell'array selezionati evidenzialo
-                cl.setBackgroundColor(getColor(R.color.colorBGSelected));
-                holder.cvChatList.setCardBackgroundColor(getColor(R.color.colorSelected));
+                 holder.itemView.setBackgroundColor(getColor(R.color.colorBGSelected));
+                 holder.cvChatList.setCardBackgroundColor(getColor(R.color.colorSelected));
             }
             else{ //altrimenti niente effetto visivo
-                cl.setBackgroundColor(Color.TRANSPARENT);
+
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
                 holder.cvChatList.setCardBackgroundColor(getColor(R.color.colorDestinatario));
             }
         }
