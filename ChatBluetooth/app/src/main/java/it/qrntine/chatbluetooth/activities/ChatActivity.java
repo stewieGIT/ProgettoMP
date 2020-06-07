@@ -100,6 +100,8 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
         holder = new Holder();
 
+        if(messaggi.size() > 0) holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
+
         //gestiscisce comunicazione con il thread connected
         mHandler = new Handler(new Handler.Callback() {
             @Override
