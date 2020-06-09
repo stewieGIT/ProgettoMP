@@ -5,9 +5,9 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.util.Log;
-
 import java.io.IOException;
-import java.util.UUID;
+import it.qrntine.chatbluetooth.Constants;
+
 
 /**
  * This thread runs while listening for incoming connections. It behaves
@@ -15,21 +15,6 @@ import java.util.UUID;
  * (or until cancelled).
  */
 public class AcceptThread extends Thread {
-    private static final String TAG = "BluetoothChatService";
-
-    // Name for the SDP record when creating server socket
-    private static final String NAME_SECURE = "BluetoothChatSecure";
-    private static final String NAME_INSECURE = "BluetoothChatInsecure";
-
-    // Unique UUID for this application
-    private static final UUID MY_UUID_SECURE =
-            UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
-    private static final UUID MY_UUID_INSECURE =
-            UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
-    public static final int STATE_NONE = 0;       // we're doing nothing
-    public static final int STATE_LISTEN = 1;     // now listening for incoming connections
-    public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
-    public static final int STATE_CONNECTED = 3;  // now connected to a remote device
 
     // The local server socket
     private final BluetoothServerSocket mmServerSocket;
@@ -39,7 +24,7 @@ public class AcceptThread extends Thread {
     private final Handler mHandler;
 
     public AcceptThread(boolean secure, BluetoothAdapter mAdapter, Handler mHandler, BluetoothChatService mBluetoothChatService) {
-        System.out.println("*********************AcceptThread ENTRO IN COSTRUTTORE");
+        //System.out.println("*********************AcceptThread ENTRO IN COSTRUTTORE");
         BluetoothServerSocket tmp = null;
         mSocketType = secure ? "Secure" : "Insecure";
         this.mHandler=mHandler;
@@ -48,36 +33,36 @@ public class AcceptThread extends Thread {
         // Create a new listening server socket
         try {
             if (secure) {
-                tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE,
-                        MY_UUID_SECURE);
+                tmp = mAdapter.listenUsingRfcommWithServiceRecord(Constants.NAME_SECURE,
+                        Constants.MY_UUID_SECURE);
             } else {
                 tmp = mAdapter.listenUsingInsecureRfcommWithServiceRecord(
-                        NAME_INSECURE, MY_UUID_INSECURE);
+                        Constants.NAME_INSECURE, Constants.MY_UUID_INSECURE);
             }
         } catch (IOException e) {
-            Log.e(TAG, "Socket Type: " + mSocketType + "listen() failed", e);
+            Log.e(Constants.TAG_ACCEPT_THREAD, "Socket Type: " + mSocketType + "listen() failed", e);
         }
         mmServerSocket = tmp;
-        mBluetoothChatService.setmState(STATE_LISTEN);
+        mBluetoothChatService.setmState(Constants.STATE_LISTEN);
     }
 
     public void run() {
-        Log.d(TAG, "Socket Type: " + mSocketType +
+        Log.d(Constants.TAG_ACCEPT_THREAD, "Socket Type: " + mSocketType +
                 "BEGIN mAcceptThread" + this);
         setName("AcceptThread" + mSocketType);
-        System.out.println("*********************AcceptThread ENTRO IN RUN");
+        //System.out.println("*********************AcceptThread ENTRO IN RUN");
         BluetoothSocket socket = null;
 
         // Listen to the server socket if we're not connected
 
 
-        while (mBluetoothChatService.getmState() != STATE_CONNECTED) {
+        while (mBluetoothChatService.getmState() != Constants.STATE_CONNECTED) {
             try {
                 // This is a blocking call and will only return on a
                 // successful connection or an exception
                 socket = mmServerSocket.accept();
             } catch (IOException e) {
-                Log.e(TAG, "Socket Type: " + mSocketType + "accept() failed", e);
+                Log.e(Constants.TAG_ACCEPT_THREAD, "Socket Type: " + mSocketType + "accept() failed", e);
                 break;
             }
 
@@ -85,20 +70,20 @@ public class AcceptThread extends Thread {
             if (socket != null) {
                 synchronized (mBluetoothChatService) {
                     switch (mBluetoothChatService.getmState()) {
-                        case STATE_LISTEN:
-                        case STATE_CONNECTING:
+                        case Constants.STATE_LISTEN:
+                        case Constants.STATE_CONNECTING:
                             BluetoothSession.getInstance().setDevice(socket.getRemoteDevice());
                             // Situation normal. Start the connected thread.
                             mBluetoothChatService.connected(socket, socket.getRemoteDevice(),
                                     mSocketType);
                             break;
-                        case STATE_NONE:
-                        case STATE_CONNECTED:
+                        case Constants.STATE_NONE:
+                        case Constants.STATE_CONNECTED:
                             // Either not ready or already connected. Terminate new socket.
                             try {
                                 socket.close();
                             } catch (IOException e) {
-                                Log.e(TAG, "Could not close unwanted socket", e);
+                                Log.e(Constants.TAG_ACCEPT_THREAD, "Could not close unwanted socket", e);
                             }
                             break;
 
@@ -107,17 +92,17 @@ public class AcceptThread extends Thread {
             }
         }
 
-        Log.i(TAG, "END mAcceptThread, socket Type: " + mSocketType);
+        Log.i(Constants.TAG_ACCEPT_THREAD, "END mAcceptThread, socket Type: " + mSocketType);
 
     }
 
     public void cancel() {
-        Log.d(TAG, "Socket Type" + mSocketType + "cancel " + this);
-        System.out.println("*********************AcceptThread ENTRO IN CANCEL");
+        Log.d(Constants.TAG_ACCEPT_THREAD, "Socket Type" + mSocketType + "cancel " + this);
+        //System.out.println("*********************AcceptThread ENTRO IN CANCEL");
         try {
             mmServerSocket.close();
         } catch (IOException e) {
-            Log.e(TAG, "Socket Type" + mSocketType + "close() of server failed", e);
+            Log.e(Constants.TAG_ACCEPT_THREAD, "Socket Type" + mSocketType + "close() of server failed", e);
         }
     }
 }

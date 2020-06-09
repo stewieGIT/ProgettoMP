@@ -1,9 +1,6 @@
 package it.qrntine.chatbluetooth.activities;
 
 import android.bluetooth.BluetoothAdapter;
-
-import android.bluetooth.BluetoothDevice;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,32 +16,27 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-
+import it.qrntine.chatbluetooth.Constants;
 import it.qrntine.chatbluetooth.R;
 import it.qrntine.chatbluetooth.bluetooth.BluetoothSession;
-import it.qrntine.chatbluetooth.bluetooth.MessageConstants;
 import it.qrntine.chatbluetooth.codifica.CodificaAES;
 import it.qrntine.chatbluetooth.codifica.MetaMessaggio;
 import it.qrntine.chatbluetooth.database.AppDatabase;
 import it.qrntine.chatbluetooth.database.CancellaMessaggiThreadDB;
-import it.qrntine.chatbluetooth.database.CancellaThreadDB;
 import it.qrntine.chatbluetooth.database.InserisciThreadDB;
 import it.qrntine.chatbluetooth.database.Messaggio;
 import it.qrntine.chatbluetooth.database.QueryThreadDB;
@@ -70,7 +62,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         setContentView(R.layout.activity_chat);
         setTitle(session.getDevice().getName());
 
-        session.setCurrentActivity(ActivityConstants.ACTIVITY_CHAT); //activity attiva nella sessione
+        session.setCurrentActivity(Constants.ACTIVITY_CHAT); //activity attiva nella sessione
 
         modCriptata = false; //AES disattivato
 
@@ -109,26 +101,26 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                 MetaMessaggio metaR, metaW;
 
                 switch (msg.what) {
-                    case MessageConstants.MESSAGE_WRITE: //niente codifica write
+                    case Constants.MESSAGE_WRITE: //niente codifica write
                         metaW = (MetaMessaggio) msg.obj;
                         writeMessage(metaW, false);
                         break;
-                    case MessageConstants.MESSAGE_READ: //niente codifica read
+                    case Constants.MESSAGE_READ: //niente codifica read
                         metaR = (MetaMessaggio) msg.obj;
                         readMessage(metaR, false);
                         break;
-                    case MessageConstants.MESSAGE_OBJECT_WRITE: //codifica write
+                    case Constants.MESSAGE_OBJECT_WRITE: //codifica write
                         metaW = (MetaMessaggio) msg.obj;
                         writeMessage(metaW, true);
                         break;
-                    case MessageConstants.MESSAGE_OBJECT_READ: //codifica read
+                    case Constants.MESSAGE_OBJECT_READ: //codifica read
                         metaR = (MetaMessaggio) msg.obj;
                         readMessage(metaR, true);
                         break;
-                    case MessageConstants.MESSAGE_TOAST:
+                    case Constants.MESSAGE_TOAST:
                         break;
-                    case MessageConstants.MESSAGE_OBJECT_ERROR_READ:
-                        session.setErrorNum(ErrorConstants.ERROR_USER_DISCONNECTED);
+                    case Constants.MESSAGE_OBJECT_ERROR_READ:
+                        session.setErrorNum(Constants.ERROR_USER_DISCONNECTED);
                         finish();
                         break;
                 }
@@ -159,11 +151,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if(item.getItemId() == R.id.delete_menu){
-            System.out.println("*************SONO NELLA ONMENUITEMCLICK");
+            //out.println("*************SONO NELLA ONMENUITEMCLICK");
             if(selectedMessages != null){
-                System.out.println("*************SELMESSAGES NOT NULL");
+                //System.out.println("*************SELMESSAGES NOT NULL");
                 if(selectedMessages.size() > 0){ //se esistono elementi selezionati cancelliamo le chat selezionate
-                    System.out.println("*************SELSIZE>0");
+                    //System.out.println("*************SELSIZE>0");
                     for(Messaggio messaggio: selectedMessages){
                         CancellaMessaggiThreadDB can = new CancellaMessaggiThreadDB(db, selectedMessages);
                         Thread cancella = new Thread(can);
@@ -174,7 +166,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        System.out.println("*************MESSAGEREMOVE"+ messaggio.testo);
+                        //System.out.println("*************MESSAGEREMOVE"+ messaggio.testo);
                         messaggi.remove(messaggio);
                     }
                     selectedMessages.clear(); //puliamo l'array
@@ -304,12 +296,12 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                     if (modCriptata) {
                         codifica = new CodificaAES();
                         MetaMessaggio metaMessaggio = codifica.codificaMessaggio(messaggioInserito);
-                        System.out.println(">>>>>>>>>>>>>>>>>>>>MSG CRYPTED: " + metaMessaggio);
+                        //System.out.println(">>>>>>>>>>>>>>>>>>>>MSG CRYPTED: " + metaMessaggio);
                         session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
                     } else {
                         MetaMessaggio metaMessaggio = new MetaMessaggio();
                         metaMessaggio.setTesto(messaggioInserito.getBytes());
-                        System.out.println(">>>>>>>>>>>>>>>>>>>>MSG UNCRYPTED: " + metaMessaggio);
+                        //System.out.println(">>>>>>>>>>>>>>>>>>>>MSG UNCRYPTED: " + metaMessaggio);
                         session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
                     }
                     etInserisciMessaggio.setText("");
@@ -340,7 +332,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
         public ChatBluetoothAdapter(List <Messaggio> dati) {
             this.dati = dati;
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + dati);
+            //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + dati);
         }
 
 
@@ -380,11 +372,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                 if (dati.get(position).mittente.equals(BluetoothAdapter.getDefaultAdapter().getAddress())) {
                     holder.cvChat.setCardBackgroundColor(getColor(R.color.colorMittente));
                     holder.rlChat.setGravity(Gravity.RIGHT); //se sei il mittente i messaggi sono visualizzati a destra
-                    System.out.println("DESTRA");
+                    //System.out.println("DESTRA");
                 } else {
                     holder.cvChat.setCardBackgroundColor(getColor(R.color.colorDestinatario));
                     holder.rlChat.setGravity(Gravity.LEFT); //altrimenti a sinistra
-                    System.out.println("SINISTRA");
+                    //System.out.println("SINISTRA");
                 }
             }
             if(checkExistance(dati.get(position), selectedMessages)){ //se esiste nell'array selezionati evidenzialo

@@ -29,11 +29,11 @@ public class CancellaThreadDB implements Runnable{
     @Override
     public void run() {
         while(running){
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Delete Avviato");
+            //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Delete Avviato");
             db.messaggioDAO().cancellaMessaggiDestinatario(destinatario); //cancella messaggio/messaggi con quel destinatario
             running = false;
         }
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Delete Terminato");
+        //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Delete Terminato");
     }
 
     /**

@@ -23,14 +23,14 @@ public class QueryThreadDB implements Runnable{
     @Override
     public void run() {
         while(running){
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Query Avviato");
+            //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Query Avviato");
             messaggi = db.messaggioDAO().scaricaMessaggiDestinatario(mittente, destinatario); //scarica i messaggi nel db
             for(Messaggio messaggio: messaggi){
-                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>Messaggio " + messaggio.testo); //semplice stampa
+                //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>Messaggio " + messaggio.testo); //semplice stampa
             }
             running = false;
         }
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Query terminato");
+        //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Query terminato");
     }
 
     /**

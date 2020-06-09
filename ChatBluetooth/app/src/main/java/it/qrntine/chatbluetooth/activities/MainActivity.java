@@ -6,7 +6,6 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -25,16 +24,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import it.qrntine.chatbluetooth.Constants;
 import it.qrntine.chatbluetooth.bluetooth.BluetoothChatService;
 import it.qrntine.chatbluetooth.bluetooth.BluetoothSession;
-import it.qrntine.chatbluetooth.bluetooth.MessageConstants;
-import it.qrntine.chatbluetooth.codifica.CodificaAES;
 import it.qrntine.chatbluetooth.R;
-//import it.qrntine.chatbluetooth.codifica.MetaMessaggio;
 import it.qrntine.chatbluetooth.database.AppDatabase;
 
 public class MainActivity extends AppCompatActivity {
@@ -51,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        session.setCurrentActivity(ActivityConstants.ACTIVITY_MAIN);
+        session.setCurrentActivity(Constants.ACTIVITY_MAIN);
+        setTitle(getString(R.string.main_title));
 
         final int REQUEST_CODE = 101;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -89,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (msg.what) {
 
-                    case MessageConstants.MESSAGE_STATE_CHANGE:
+                    case Constants.MESSAGE_STATE_CHANGE:
                         switch (msg.arg1) {
-                            case BluetoothChatService.STATE_CONNECTED:
-                                if(session.getCurrentActivity() != ActivityConstants.ACTIVITY_CHAT){
+                            case Constants.STATE_CONNECTED:
+                                if(session.getCurrentActivity() != Constants.ACTIVITY_CHAT){
                                     Intent intent=new Intent(MainActivity.this, ChatActivity.class);
                                     startActivity(intent);
                                 }
@@ -102,11 +97,11 @@ public class MainActivity extends AppCompatActivity {
                                     startActivity(intent);
                                 }
                                 break;
-                            case BluetoothChatService.STATE_CONNECTING:
-                                showToast("Connessione...");
+                            case Constants.STATE_CONNECTING:
+                                showToast(getString(R.string.connessione));
                                 break;
-                            case BluetoothChatService.STATE_LISTEN: break;
-                            case BluetoothChatService.STATE_NONE: break;
+                            case Constants.STATE_LISTEN: break;
+                            case Constants.STATE_NONE: break;
 
                         }
                         break;
@@ -121,18 +116,10 @@ public class MainActivity extends AppCompatActivity {
         holder = new Holder();
     }
 
-    /**
-     * crea istanza di DB con Room
-     */
-    private void creaDB(){
-        db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "messaggi").build();
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-        if(session.getErrorNum() == ErrorConstants.ERROR_USER_DISCONNECTED){
+        if(session.getErrorNum() == Constants.ERROR_USER_DISCONNECTED){
             Toast.makeText(MainActivity.this, R.string.error_user_disconnected, Toast.LENGTH_LONG).show();
             session.getmBluetoothChatService().stop();
             session.getmBluetoothChatService().start();
@@ -171,6 +158,39 @@ public class MainActivity extends AppCompatActivity {
             rvAdapter = new RecycleAdapter(devices);
             rvDevices.setAdapter(rvAdapter);
         }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case (R.id.btnAvviaRicerca):
+                    if (BluetoothAdapter.getDefaultAdapter().isDiscovering()) {
+                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+                        //showToast(getString(R.string.stop_ricerca));
+                        holder.btnAvviaRicerca.setText(R.string.avvia_ricerca);
+                        holder.tvRisultatiRicerca.setText(R.string.risultati_ricerca);
+                    } else {
+                        IntentFilter filter = new IntentFilter();
+                        filter.addAction(BluetoothDevice.ACTION_FOUND);
+                        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+                        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+                        registerReceiver(mReceiver, filter);
+                        RECEIVER_REGISTERED = true;
+                        //quando clicco su ricerca azzero la lista dei nomi. Vanno gestiti diversamente i dispositivi gia' associati
+                        if(devices.size() > 0) {
+                            devices.clear();
+                        }
+                        BluetoothAdapter.getDefaultAdapter().startDiscovery();
+                        //showToast("Scansione iniziata");
+                    }
+                    break;
+                case (R.id.btnChat):
+                    Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
+                    startActivity(intent);
+                    break;
+            }
+
+        }
+
         public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHolder> implements View.OnClickListener {
             private List<String> dev;
 
@@ -217,7 +237,6 @@ public class MainActivity extends AppCompatActivity {
 
             public class ViewHolder extends RecyclerView.ViewHolder {
                 private TextView tvDev;
-
                 public ViewHolder(@NonNull View itemView) {
                     super(itemView);
                     tvDev = itemView.findViewById(R.id.tvDevice);
@@ -225,40 +244,6 @@ public class MainActivity extends AppCompatActivity {
             }   //end Holder
 
         }
-
-        //CONTINUE HOLDER
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case (R.id.btnAvviaRicerca):
-                    if (BluetoothAdapter.getDefaultAdapter().isDiscovering()) {
-                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-                        showToast("Scansione interrotta");
-                    } else {
-                        IntentFilter filter = new IntentFilter();
-
-                        filter.addAction(BluetoothDevice.ACTION_FOUND);
-                        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-                        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-                        registerReceiver(mReceiver, filter);
-                        RECEIVER_REGISTERED = true;
-                        //quando clicco su ricerca azzero la lista dei nomi. Vanno gestiti diversamente i dispositivi gia' associati
-                        if(devices.size() > 0) {
-                            devices.clear();
-                        }
-                        BluetoothAdapter.getDefaultAdapter().startDiscovery();
-                        showToast("Scansione iniziata");
-                    }
-                    break;
-                case (R.id.btnChat):
-                    Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
-                    startActivity(intent);
-                    break;
-            }
-
-        }
-
-
     }
     //END HOLDER
 
@@ -269,22 +254,25 @@ public class MainActivity extends AppCompatActivity {
             String action = intent.getAction();
 
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                showToast("Ricerca...");
+                //showToast(getString(R.string.inizio_ricerca));
+                holder.btnAvviaRicerca.setText(R.string.interrompi_ricerca);
+                holder.tvRisultatiRicerca.setText(R.string.inizio_ricerca);
                 //discovery starts, we can show progress dialog or perform other tasks
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                //discovery finishes, dismis progress dialog
-                showToast("Ricerca completata.");
-
+                //discovery finishes, dismiss progress dialog
+                //showToast(getString(R.string.fine_ricerca));
+                holder.btnAvviaRicerca.setText(R.string.avvia_ricerca);
+                holder.tvRisultatiRicerca.setText(R.string.risultati_ricerca);
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 //bluetooth device found
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if(!devices.contains(device.getName())) {
                     // se il dispositivo non ha un nome prendo l'indirizzo
                     if(device.getName() == null) {
-                        showToast("Dispositivo trovato: " + device.getAddress());
+                        //showToast("Dispositivo trovato: " + device.getAddress());
                         devices.add(device.getAddress());
                     } else {
-                        showToast("Dispositivo trovato: " + device.getName());
+                        //showToast("Dispositivo trovato: " + device.getName());
                         devices.add(device.getName());
                     }
                     objDevices.add(device);
@@ -293,8 +281,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };  //END BROADCAST RECEIVER
-
-
 
     public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();

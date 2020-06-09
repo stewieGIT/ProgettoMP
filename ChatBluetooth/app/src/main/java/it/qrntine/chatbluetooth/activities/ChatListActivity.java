@@ -3,7 +3,6 @@ package it.qrntine.chatbluetooth.activities;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,7 +13,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,13 +21,12 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import it.qrntine.chatbluetooth.Constants;
 import it.qrntine.chatbluetooth.R;
 import it.qrntine.chatbluetooth.bluetooth.BluetoothSession;
 import it.qrntine.chatbluetooth.database.AppDatabase;
@@ -38,7 +35,8 @@ import it.qrntine.chatbluetooth.database.Messaggio;
 import it.qrntine.chatbluetooth.database.QueryThreadDB;
 import it.qrntine.chatbluetooth.decorator.DecoratorRecyclerView;
 
-public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMenuItemClickListener{
+
+public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMenuItemClickListener {
     private BluetoothSession session= BluetoothSession.getInstance();
     private Holder holder;
     private Set<BluetoothDevice> pairedDevices;
@@ -50,9 +48,9 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
-        setTitle("Chat List"); //titolo activity
+        setTitle(getString(R.string.chat_list)); //titolo activity
 
-        session.setCurrentActivity(ActivityConstants.ACTIVITY_CHATLIST); //activity attiva nella sessione
+        session.setCurrentActivity(Constants.ACTIVITY_CHATLIST); //activity attiva nella sessione
 
         BluetoothAdapter adapter = session.getmBluetoothChatService().getmAdapter();
         pairedDevices = adapter.getBondedDevices(); //prendiamo i dispositivi già accoppiati
@@ -70,7 +68,7 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         checkDatabaseForExistingChat(); //verifichiamo se esistono nuove chat
         holder.rvChatList.getAdapter().notifyDataSetChanged();
 
-        if(session.getErrorNum() == ErrorConstants.ERROR_USER_DISCONNECTED){ //annunciamo che il destinatario si è disconnesso
+        if(session.getErrorNum() == Constants.ERROR_USER_DISCONNECTED){ //annunciamo che il destinatario si è disconnesso
             Toast.makeText(ChatListActivity.this, R.string.error_user_disconnected, Toast.LENGTH_LONG).show();
             session.getmBluetoothChatService().stop(); //riavviamo il servizio di chat
             session.getmBluetoothChatService().start();
@@ -125,11 +123,9 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
             btnTabChat.setEnabled(false);
             btnTabRicerca.setOnClickListener(this);
             rvChatList=findViewById(R.id.rvChatList);
-
             rvChatList.setAdapter(new ChatListAdapter(chatDevices));
             rvChatList.setLayoutManager(new LinearLayoutManager(ChatListActivity.this));
-
-            DecoratorRecyclerView decorator = new DecoratorRecyclerView(10);
+            DecoratorRecyclerView decorator = new DecoratorRecyclerView(Constants.RV_HEIGHT);
             rvChatList.addItemDecoration(decorator);
         }
 
@@ -164,12 +160,9 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         public void onBindViewHolder(@NonNull ChatListAdapter.ChatHolder holder, int position) {
             holder.tvChat.setText(data.get(position).getName());
             if(checkExistance(data.get(position), selectedChats)){ //se esiste nell'array selezionati evidenzialo
-                 //holder.itemView.setBackgroundColor(getColor(R.color.colorBGSelected));
                  holder.cvChatList.setCardBackgroundColor(getColor(R.color.colorDestinatario));
             }
             else{ //altrimenti niente effetto visivo
-
-                //holder.itemView.setBackgroundColor(Color.TRANSPARENT);
                 holder.cvChatList.setCardBackgroundColor(getColor(R.color.colorSelected));
             }
         }
@@ -202,11 +195,11 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
             int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
             if(!checkExistance(data.get(position), selectedChats)){ //se l'elemento non esiste aggiungilo
                 selectedChats.add(data.get(position));
-                Toast.makeText(ChatListActivity.this, "Selected Chat", Toast.LENGTH_LONG).show();
+                //Toast.makeText(ChatListActivity.this, "Selected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
             }else{ //altrimenti no
                 selectedChats.remove(data.get(position));
-                Toast.makeText(ChatListActivity.this, "Unselected Chat", Toast.LENGTH_LONG).show();
+                //Toast.makeText(ChatListActivity.this, "Unselected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
             }
             return true;
@@ -231,17 +224,14 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
      */
     private void creaDB(){
         db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "messaggi").build();
+                AppDatabase.class, getString(R.string.messaggi)).build();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.menu_chatlist, menu);
-
         MenuItem deleteItem = menu.findItem(R.id.delete_menu_chatlist);
         deleteItem.setOnMenuItemClickListener(this);
-
         return true;
     }
 
@@ -280,5 +270,5 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         return false;
     }
 
-    }
+}
 

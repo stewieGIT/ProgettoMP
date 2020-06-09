@@ -4,11 +4,9 @@ package it.qrntine.chatbluetooth.bluetooth;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.os.Handler;
 import android.util.Log;
-
 import java.io.IOException;
-import java.util.UUID;
+import it.qrntine.chatbluetooth.Constants;
 
 /**
  * This thread runs while attempting to make an outgoing connection
@@ -16,22 +14,6 @@ import java.util.UUID;
  * succeeds or fails.
  */
 public class ConnectThread extends Thread {
-
-    private static final String TAG = "BluetoothChatService";
-
-    // Name for the SDP record when creating server socket
-    private static final String NAME_SECURE = "BluetoothChatSecure";
-    private static final String NAME_INSECURE = "BluetoothChatInsecure";
-
-    // Unique UUID for this application
-    private static final UUID MY_UUID_SECURE =
-            UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
-    private static final UUID MY_UUID_INSECURE =
-            UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
-    public static final int STATE_NONE = 0;       // we're doing nothing
-    public static final int STATE_LISTEN = 1;     // now listening for incoming connections
-    public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
-    public static final int STATE_CONNECTED = 3;  // now connected to a remote device
 
     private BluetoothSocket mmSocket;
     private final BluetoothDevice mmDevice;
@@ -41,7 +23,7 @@ public class ConnectThread extends Thread {
 
 
     public ConnectThread(BluetoothDevice device, boolean secure, BluetoothAdapter mAdapter, BluetoothChatService mBluetoothChatService ) {
-        System.out.println("*********************ConnectThread ENTRO IN COSTRUTTORE");
+        //System.out.println("*********************ConnectThread ENTRO IN COSTRUTTORE");
         mmDevice = device;
         BluetoothSocket tmp = null;
         mSocketType = secure ? "Secure" : "Insecure";
@@ -54,21 +36,21 @@ public class ConnectThread extends Thread {
         try {
             if (secure) {
                 tmp = device.createRfcommSocketToServiceRecord(
-                        MY_UUID_SECURE);
+                        Constants.MY_UUID_SECURE);
             } else {
                 tmp = device.createInsecureRfcommSocketToServiceRecord(
-                        MY_UUID_INSECURE);
+                        Constants.MY_UUID_INSECURE);
             }
         } catch (IOException e) {
-            Log.e(TAG, "Socket Type: " + mSocketType + "create() failed", e);
+            Log.e(Constants.TAG_CONNECT_THREAD, "Socket Type: " + mSocketType + "create() failed", e);
         }
         mmSocket = tmp;
-        mBluetoothChatService.setmState(STATE_CONNECTING);
+        mBluetoothChatService.setmState(Constants.STATE_CONNECTING);
     }
 
     public void run() {
-        System.out.println("*********************ConnectThread ENTRO IN RUN");
-        Log.i(TAG, "BEGIN mConnectThread SocketType:" + mSocketType);
+        //System.out.println("*********************ConnectThread ENTRO IN RUN");
+        Log.i(Constants.TAG_CONNECT_THREAD, "BEGIN mConnectThread SocketType:" + mSocketType);
         setName("ConnectThread" + mSocketType);
 
         // Always cancel discovery because it will slow down a connection
@@ -84,7 +66,7 @@ public class ConnectThread extends Thread {
             try {
                 mmSocket.close();
             } catch (IOException e3) {
-                Log.e(TAG, "unable to close() " + mSocketType +
+                Log.e(Constants.TAG_CONNECT_THREAD, "unable to close() " + mSocketType +
                         " socket during connection failure", e3);
             }
             mBluetoothChatService.connectionFailed();
@@ -104,11 +86,11 @@ public class ConnectThread extends Thread {
     }
 
     public void cancel () {
-        System.out.println("*********************ConnectThread ENTRO IN CANCEL");
+        //System.out.println("*********************ConnectThread ENTRO IN CANCEL");
         try {
             mmSocket.close();
         } catch (IOException e) {
-            Log.e(TAG, "close() of connect " + mSocketType + " socket failed", e);
+            Log.e(Constants.TAG_CONNECT_THREAD, "close() of connect " + mSocketType + " socket failed", e);
         }
     }
 }

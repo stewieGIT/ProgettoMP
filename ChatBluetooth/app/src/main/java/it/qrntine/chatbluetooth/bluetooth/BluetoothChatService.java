@@ -2,20 +2,13 @@ package it.qrntine.chatbluetooth.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.UUID;
+import it.qrntine.chatbluetooth.Constants;
 
 /**
  * This class does all the work for setting up and managing Bluetooth
@@ -24,36 +17,16 @@ import java.util.UUID;
  * thread for performing data transmissions when connected.
  */
 public class BluetoothChatService {
-    // Debugging
-    private static final String TAG = "BluetoothChatService";
-
-    // Name for the SDP record when creating server socket
-    private static final String NAME_SECURE = "BluetoothChatSecure";
-    private static final String NAME_INSECURE = "BluetoothChatInsecure";
-
-    // Unique UUID for this application
-    private static final UUID MY_UUID_SECURE =
-            UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
-    private static final UUID MY_UUID_INSECURE =
-            UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
 
     // Member fields
     private final BluetoothAdapter mAdapter;
-
     private Handler mHandler;
-
     private AcceptThread mSecureAcceptThread;
     private AcceptThread mInsecureAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
     private int mNewState;
-
-    // Constants that indicate the current connection state
-    public static final int STATE_NONE = 0;       // we're doing nothing
-    public static final int STATE_LISTEN = 1;     // now listening for incoming connections
-    public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
-    public static final int STATE_CONNECTED = 3;  // now connected to a remote device
 
     /**
      * Constructor. Prepares a new BluetoothChat session.
@@ -63,7 +36,7 @@ public class BluetoothChatService {
 
     public BluetoothChatService(Context context, Handler handler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
-        mState = STATE_NONE;
+        mState = Constants.STATE_NONE;
         mNewState = mState;
         mHandler = handler;
     }
@@ -73,11 +46,11 @@ public class BluetoothChatService {
      */
     private synchronized void updateUserInterfaceTitle() {
         mState = getState();
-        Log.d(TAG, "updateUserInterfaceTitle() " + mNewState + " -> " + mState);
+        Log.d(Constants.TAG_BlUETOOTH_CHAT_SERVICE, "updateUserInterfaceTitle() " + mNewState + " -> " + mState);
         mNewState = mState;
 
         // Give the new state to the Handler so the UI Activity can update
-        mHandler.obtainMessage(MessageConstants.MESSAGE_STATE_CHANGE, mNewState, -1).sendToTarget();
+        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, mNewState, -1).sendToTarget();
     }
 
     /**
@@ -92,9 +65,9 @@ public class BluetoothChatService {
      * session in listening (server) mode. Called by the Activity onResume()
      */
     public synchronized void start() {
-        Log.d(TAG, "start");
+        Log.d(Constants.TAG_BlUETOOTH_CHAT_SERVICE, "start");
 
-        System.out.println("*********************BluetoothChatService ENTRO IN START");
+        //.out.println("*********************BluetoothChatService ENTRO IN START");
 
         // Cancel any thread attempting to make a connection
         if (mConnectThread != null) {
@@ -128,12 +101,12 @@ public class BluetoothChatService {
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
     public synchronized void connect(BluetoothDevice device, boolean secure) {
-        Log.d(TAG, "connect to: " + device);
+        Log.d(Constants.TAG_BlUETOOTH_CHAT_SERVICE, "connect to: " + device);
 
-        System.out.println("*********************BluetoothChatService ENTRO IN CONNECT");
+        //System.out.println("*********************BluetoothChatService ENTRO IN CONNECT");
 
         // Cancel any thread attempting to make a connection
-        if (mState == STATE_CONNECTING) {
+        if (mState == Constants.STATE_CONNECTING) {
             if (mConnectThread != null) {
                 mConnectThread.cancel();
                 mConnectThread = null;
@@ -161,9 +134,9 @@ public class BluetoothChatService {
      */
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice
             device, final String socketType) {
-        Log.d(TAG, "connected, Socket Type:" + socketType);
+        Log.d(Constants.TAG_BlUETOOTH_CHAT_SERVICE, "connected, Socket Type:" + socketType);
 
-        System.out.println("*********************BluetoothChatService ENTRO IN CONNECTED");
+        //System.out.println("*********************BluetoothChatService ENTRO IN CONNECTED");
 
 
         // Cancel the thread that completed the connection
@@ -193,9 +166,9 @@ public class BluetoothChatService {
         mConnectedThread = new ConnectedThread(socket, socketType, mAdapter, this, mHandler);
         mConnectedThread.start();
 
-        /*Message msg = mHandler.obtainMessage(MessageConstants.MESSAGE_DEVICE_NAME);
+        /*Message msg = mHandler.obtainMessage(Constants.MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
-        bundle.putString(MessageConstants.DEVICE_NAME, device.getName());
+        bundle.putString(Constants.DEVICE_NAME, device.getName());
         msg.setData(bundle);
         mHandler.sendMessage(msg);*/
 
@@ -207,9 +180,9 @@ public class BluetoothChatService {
      * Stop all threads
      */
     public synchronized void stop() {
-        Log.d(TAG, "stop");
+        Log.d(Constants.TAG_BlUETOOTH_CHAT_SERVICE, "stop");
 
-        System.out.println("*********************BluetoothChatService ENTRO IN STOP");
+        //System.out.println("*********************BluetoothChatService ENTRO IN STOP");
 
         if (mConnectThread != null) {
             mConnectThread.cancel();
@@ -230,7 +203,7 @@ public class BluetoothChatService {
             mInsecureAcceptThread.cancel();
             mInsecureAcceptThread = null;
         }
-        mState = STATE_NONE;
+        mState = Constants.STATE_NONE;
         // Update UI title
         updateUserInterfaceTitle();
     }
@@ -240,16 +213,16 @@ public class BluetoothChatService {
      */
     public void connectionFailed() {
 
-        System.out.println("*********************BluetoothChatService ENTRO IN CONNECTIONFAILED");
+        //System.out.println("*********************BluetoothChatService ENTRO IN CONNECTIONFAILED");
 
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(MessageConstants.MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(MessageConstants.TOAST, "Unable to connect device");
+        bundle.putString(Constants.TOAST, "Unable to connect device");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
-        mState = STATE_NONE;
+        mState = Constants.STATE_NONE;
         // Update UI title
         updateUserInterfaceTitle();
 
@@ -261,15 +234,15 @@ public class BluetoothChatService {
      * Indicate that the connection was lost and notify the UI Activity.
      */
     public void connectionLost() {
-        System.out.println("*********************BluetoothChatService ENTRO IN CONNECTIONLOST");
+        //System.out.println("*********************BluetoothChatService ENTRO IN CONNECTIONLOST");
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(MessageConstants.MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(MessageConstants.TOAST, "Device connection was lost");
+        bundle.putString(Constants.TOAST, "Device connection was lost");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
-        mState = STATE_NONE;
+        mState = Constants.STATE_NONE;
         // Update UI title
         updateUserInterfaceTitle();
 

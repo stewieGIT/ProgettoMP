@@ -1,9 +1,23 @@
 <resources>
     <string name="app_name">ChatBluetooth</string>
-    <string name="search">Ricerca</string>
-    <string name="chat">  Chat   </string>
-    <string name="btnSend">Send</string>
-    <string name="hint_message">Insert Message</string>
-    <string name="menu_chatlist_delete">Delete</string>
-    <string name="error_user_disconnected">The user has disconnected</string>
+    <string name="search">  Ricerca  </string>
+    <string name="chat">  Chat  </string>
+    <string name="btnSend">Invia</string>
+    <string name="hint_message">Inserisci messaggio</string>
+    <string name="menu_chatlist_delete">Elimina</string>
+    <string name="error_user_disconnected">L\'utente si e\' disconnesso</string>
+    <string name="inizio_ricerca">Ricerca...</string>
+    <string name="fine_ricerca">Ricerca completata</string>
+    <string name="stop_ricerca">Ricerca interrotta</string>
+    <string name="main_title">Bluetooth chat</string>
+    <string name="chat_list">Lista chat</string>
+    <string name="connessione">Connessione...</string>
+    <string name="risultati_ricerca">Risultati ricerca:</string>
+    <string name="avvia_ricerca">Avvia ricerca</string>
+    <string name="interrompi_ricerca">Interrompi ricerca</string>
+    <!-- non tradurre -->
+    <string name="messaggi">messaggi</string>
+
+
+
 </resources>
