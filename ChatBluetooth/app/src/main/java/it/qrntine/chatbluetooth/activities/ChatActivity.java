@@ -394,15 +394,21 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
             String msg = (dati.get(position).testo);
 
+            boolean isEmojiMsg = false; // var per controllare se messaggio e' emoji
+            int emojiRes = 0;   // var per ritorno resource emoji
+
             // controllo se il messaggio inizia con ":"
             if (msg.startsWith(":")) {   //potrebbe esserci emoji
-                int emoji = EmoticonsManager.selectEmojiByKeyword(msg);  //verifico
-                if (emoji != 0) {
-                    holder.tvMessaggio.setText(null);   //campo testo nullo. Se si desidera e' possibile inserire del testo e gestire la posizione della emoji nella textview cambiando i parametri della setCompoundDrawablesRelativeWithIntrinsicBounds().
-                    holder.tvMessaggio.setCompoundDrawablesRelativeWithIntrinsicBounds(getDrawable(emoji), null, null, null);
-                }
+                emojiRes = EmoticonsManager.selectEmojiByKeyword(msg);  //verifico
+                if (emojiRes != 0) isEmojiMsg = true;
+            }
 
-                // il testo non inizia per ":", sicuramente non ci sono emoji
+            // se emoji
+            if(isEmojiMsg) {
+                holder.tvMessaggio.setText(null);   //campo testo nullo. Se si desidera e' possibile inserire del testo e gestire la posizione della emoji nella textview cambiando i parametri della setCompoundDrawablesRelativeWithIntrinsicBounds().
+                holder.tvMessaggio.setCompoundDrawablesRelativeWithIntrinsicBounds(getDrawable(emojiRes), null, null, null);
+
+            // messaggio testuale
             } else {
                 holder.tvMessaggio.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null); //campo drawable nullo
 
