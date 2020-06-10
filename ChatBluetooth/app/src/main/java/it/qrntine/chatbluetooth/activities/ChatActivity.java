@@ -1,6 +1,7 @@
 package it.qrntine.chatbluetooth.activities;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,10 +43,12 @@ import it.qrntine.chatbluetooth.database.InserisciThreadDB;
 import it.qrntine.chatbluetooth.database.Messaggio;
 import it.qrntine.chatbluetooth.database.QueryThreadDB;
 import it.qrntine.chatbluetooth.decorator.DecoratorRecyclerView;
+import it.qrntine.chatbluetooth.emoticons.EmoticonsManager;
 import it.qrntine.chatbluetooth.markdown.ParserMarkdown;
 
 public class ChatActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, MenuItem.OnMenuItemClickListener {
 
+    private static final int REQCODE_POPUP_ACTIVITY = 101;
     private String data;
     private String time;
     private CodificaAES codifica;
@@ -129,6 +133,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         });
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -143,8 +148,10 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         if(session.getmBluetoothChatService().getmState() != 3){ //se non connesso disattiva bottoni
             holder.ivModCriptata.setEnabled(false);
             holder.ivInviaMessaggio.setEnabled(false);
+            holder.ivSmileBtn.setEnabled(false);
             holder.ivInviaMessaggio.setAlpha(0.3f);
             holder.ivModCriptata.setAlpha(0.3f);
+            holder.ivSmileBtn.setAlpha(0.3f);
         }
     }
 
@@ -262,22 +269,28 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
     class Holder implements View.OnClickListener {
 
+        private RelativeLayout rlInsertMessage; //  relative layout corrispondente alla bar inserimento msg
         private RecyclerView rvChat;
         private EditText etInserisciMessaggio;
-        private ImageView ivInviaMessaggio, ivModCriptata;
+        private ImageView ivInviaMessaggio, ivModCriptata, ivSmileBtn;
 
         public Holder() {
+            rlInsertMessage = findViewById(R.id.rlInsertMessage);
             etInserisciMessaggio = findViewById(R.id.etInserisciMessaggio);
             ivInviaMessaggio = findViewById(R.id.ivInviaMessaggio);
             ivModCriptata = findViewById(R.id.ivModCriptata);
+            ivSmileBtn = findViewById(R.id.ivSmileBtn);
             ivInviaMessaggio.setOnClickListener(this);
             ivModCriptata.setOnClickListener(this);
+            ivSmileBtn.setOnClickListener(this);
 
+            // RV messaggi chat
             rvChat = findViewById(R.id.rvChat);
             rvChat.setAdapter(new ChatBluetoothAdapter(messaggi));
             LinearLayoutManager lm = new LinearLayoutManager(ChatActivity.this);
             rvChat.setLayoutManager(lm);
 
+            // DECORATOR RV messaggi chat
             DecoratorRecyclerView decorator = new DecoratorRecyclerView(15); //decorator per spaziare gli oggetti
             rvChat.addItemDecoration(decorator);
         }
@@ -321,11 +334,40 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                     Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_LONG).show();
                 }
             }
+
+            if (v.getId() == R.id.ivSmileBtn) { // apri popup emoji
+                // Rendo invisibile relative layout di inserimento messaggi
+                holder.rlInsertMessage.setVisibility(View.INVISIBLE);
+
+                Intent intent = new Intent(ChatActivity.this, PopUpActivity.class);
+                //intent.putExtra("heightEmojiBar", heightEmojiBar);
+                //passare context per prelevare immagini da assets
+                startActivityForResult(intent, REQCODE_POPUP_ACTIVITY);
+            }
         }
     }
 
-    /*
-    /*adapter per il recyclerview*/
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case (REQCODE_POPUP_ACTIVITY):
+                // Rendo visibile relative layout di inserimento messaggi
+                holder.rlInsertMessage.setVisibility(View.VISIBLE);
+                if (resultCode == RESULT_OK) {
+                    assert data != null;
+                    String kwEmoji = data.getStringExtra("kwEmoji");
+                    holder.etInserisciMessaggio.append(kwEmoji);    // inserisco la keyword nell'etMessaggio
+                } else {
+                    System.out.println("Nessuna emoji selezionata");
+                }
+                break;
+        }
+    }
+
+
+        /*adapter per il recyclerview*/
     class ChatBluetoothAdapter extends RecyclerView.Adapter <ChatBluetoothAdapter.ChatHolder> implements View.OnLongClickListener,View.OnClickListener {
 
         private List <Messaggio> dati;
@@ -352,20 +394,36 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
             String msg = (dati.get(position).testo);
 
-            if (!msg.matches("^(<(.+?)*>)")) {  //se il messaggio non e' in formato html, verifico se ha notazioni markdown
-                int n;
-                for(int i=1; i<4; i++) {
-                    msg = ParserMarkdown.parserString(msg, i);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
+            // controllo se il messaggio inizia con ":"
+            if (msg.startsWith(":")) {   //potrebbe esserci emoji
+                int emoji = EmoticonsManager.selectEmojiByKeyword(msg);  //verifico
+                if (emoji != 0) {
+                    holder.tvMessaggio.setText(null);   //campo testo nullo. Se si desidera e' possibile inserire del testo e gestire la posizione della emoji nella textview cambiando i parametri della setCompoundDrawablesRelativeWithIntrinsicBounds().
+                    holder.tvMessaggio.setCompoundDrawablesRelativeWithIntrinsicBounds(getDrawable(emoji), null, null, null);
                 }
 
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                holder.tvMessaggio.setText(Html.fromHtml(msg, Html.FROM_HTML_MODE_LEGACY));
+                // il testo non inizia per ":", sicuramente non ci sono emoji
             } else {
-                holder.tvMessaggio.setText(msg);
+                holder.tvMessaggio.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null); //campo drawable nullo
+
+                //se il messaggio non presenta tag html effettuo il parsing di possibili notazioni markdown
+                if (!msg.matches("(<(.+)*>)*")) {
+                    int n;
+                    for (int i = 1; i < 4; i++) {
+                        msg = ParserMarkdown.parserString(msg, i);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
+                    }
+                }
+
+                //scrivo il testo nella textview
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    holder.tvMessaggio.setText(Html.fromHtml(msg, Html.FROM_HTML_MODE_LEGACY));
+                } else {
+                    //rendering html non supportato
+                    holder.tvMessaggio.setText(msg);
+                }
             }
 
+            //scrivo l'ora del messaggio nella textview
             holder.tvData.setText(dati.get(position).ora);
             //serve per fare il display dei messaggi
             if (dati.get(position).mittente != null) {

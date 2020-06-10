@@ -11,15 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/rlInsertMessage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <RelativeLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/rlInsertMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -30,20 +30,32 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
-            android:id="@+id/ivModCriptata"
+            android:id="@+id/ivSmileBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:contentDescription="Attiva_Disattiva AES"
+            android:foregroundTint="#FFFFFF"
+            android:contentDescription="@string/descr_iv_emoticons"
+            app:srcCompat="@drawable/emoji_button" />
+
+        <ImageView
+            android:id="@+id/ivModCriptata"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="0dp"
+            android:layout_toStartOf="@+id/ivInviaMessaggio"
+            android:contentDescription="@string/descr_iv_aes"
             app:srcCompat="@drawable/no_aes" />
 
         <EditText
             android:id="@+id/etInserisciMessaggio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/ivInviaMessaggio"
-            android:layout_toEndOf="@+id/ivModCriptata"
             android:layout_marginHorizontal="8dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_toStartOf="@+id/ivModCriptata"
+            android:layout_toEndOf="@+id/ivSmileBtn"
             android:autofillHints=""
             android:hint="@string/hint_message"
             android:inputType="textPersonName"
@@ -54,7 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:contentDescription="Invia messaggio"
+            android:contentDescription="@string/descr_iv_invia_messaggio"
             app:srcCompat="@drawable/invia" />
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

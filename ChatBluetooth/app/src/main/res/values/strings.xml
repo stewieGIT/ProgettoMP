@@ -17,7 +17,9 @@
     <string name="interrompi_ricerca">Interrompi ricerca</string>
     <!-- non tradurre -->
     <string name="messaggi">messaggi</string>
-
+    <string name="descr_iv_invia_messaggio">Invia messaggio</string>
+    <string name="descr_iv_aes">Attiva_Disattiva AES</string>
+    <string name="descr_iv_emoticons">Emoticons</string>
 
 
 </resources>
