@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if(session.getErrorNum() == Constants.ERROR_USER_DISCONNECTED){
-            Toast.makeText(MainActivity.this, R.string.error_user_disconnected, Toast.LENGTH_LONG).show();
+            showToast(getString( R.string.error_user_disconnected));
             session.getmBluetoothChatService().stop();
             session.getmBluetoothChatService().start();
         }

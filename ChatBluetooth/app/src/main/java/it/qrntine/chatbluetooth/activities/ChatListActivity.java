@@ -99,11 +99,11 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
                         }
                     }
                     selectedChats.clear(); //puliamo l'array
-                    Toast.makeText(ChatListActivity.this, "Chat deleted", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChatListActivity.this, getString(R.string.chat_deleted), Toast.LENGTH_LONG).show();
                     holder.rvChatList.getAdapter().notifyDataSetChanged();
                 }
                 else{
-                    Toast.makeText(ChatListActivity.this, "No chat to delete", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChatListActivity.this, getString(R.string.no_chat_to_delete), Toast.LENGTH_LONG).show();
                 }
             }
         }
