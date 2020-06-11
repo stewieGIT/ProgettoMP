@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,16 +49,16 @@ public class PopUpActivity extends Activity {
     }
 
     class Holder {
-        RecyclerView recyclerView;
+        RecyclerView rvEmoji;
 
         Holder() {
-            recyclerView = findViewById(R.id.rvEmoji2);
+            rvEmoji = findViewById(R.id.rvEmoji2);
             listaEmoji = EmoticonsManager.listKeywords();
 
             RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(PopUpActivity.this, LinearLayoutManager.HORIZONTAL, false);
-            recyclerView.setLayoutManager(layoutManager);
+            rvEmoji.setLayoutManager(layoutManager);
             RecyclerView.Adapter emojiRvAdapter = new EmojiRvAdapter(listaEmoji);
-            recyclerView.setAdapter(emojiRvAdapter);
+            rvEmoji.setAdapter(emojiRvAdapter);
         }
     }
 
