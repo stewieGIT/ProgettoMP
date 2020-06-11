@@ -71,11 +71,8 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onCreate(bundle);
         setContentView(R.layout.activity_chat);
         setTitle(session.getDevice().getName());
-
         session.setCurrentActivity(Constants.ACTIVITY_CHAT); //activity attiva nella sessione
-
         modCriptata = false; //AES disattivato
-
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"), Locale.ITALY);
         data = calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH) + "/" +
                 calendar.get(Calendar.YEAR);
@@ -190,7 +187,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                     Toast.makeText(ChatActivity.this, getString(R.string.no_message_to_delete), Toast.LENGTH_LONG).show();
                 }
             }
-            holder.deleteItem.setVisible(false);
+            //holder.deleteItem.setVisible(false);
         }
 
         return false;
@@ -241,7 +238,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         inserisci.start();
         holder.rvChat.getAdapter().notifyDataSetChanged();
         holder.rvChat.smoothScrollToPosition(messaggi.size()-1);
-
     }
 
     //Leggi messaggio e scrivi sul DB
@@ -334,11 +330,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                 modCriptata = !modCriptata;
                 String msg;
                 if (modCriptata) {
-                    holder.ivModCriptata.setImageResource(R.drawable.aes);
+                    holder.ivModCriptata.setImageResource(R.drawable.ic_aes);
                     msg="Crittografia AES attivata.";
                     Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_LONG).show();
                 } else {
-                    holder.ivModCriptata.setImageResource(R.drawable.no_aes);
+                    holder.ivModCriptata.setImageResource(R.drawable.ic_no_aes);
                     msg="Crittografia AES disattivata.";
                     Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_LONG).show();
                 }
@@ -348,9 +344,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                 // Rendo invisibile relative layout di inserimento messaggi
                 hideKeyboard(ChatActivity.this);
                 holder.rlInsertMessage.setVisibility(View.INVISIBLE);
-
                 Intent intent = new Intent(ChatActivity.this, PopUpActivity.class);
-                //intent.putExtra("heightEmojiBar", heightEmojiBar);
                 //passare context per prelevare immagini da assets
                 startActivityForResult(intent, REQCODE_POPUP_ACTIVITY);
             }
@@ -477,11 +471,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
             if(!checkExistance(dati.get(position), selectedMessages)){ //se l'elemento non esiste aggiungilo
                 selectedMessages.add(dati.get(position));
-                holder.deleteItem.setVisible(true);
+                //holder.deleteItem.setVisible(true);
                 //Toast.makeText(ChatActivity.this, "Selected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
             }else{ //altrimenti no
-                holder.deleteItem.setVisible(false);
+                //holder.deleteItem.setVisible(false);
                 selectedMessages.remove(dati.get(position));
                 //Toast.makeText(ChatActivity.this, "Unselected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
@@ -514,7 +508,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         holder.searchItem = menu.findItem(R.id.search_menu);
         holder.deleteItem = menu.findItem(R.id.delete_menu);
         holder.deleteItem.setOnMenuItemClickListener(this);
-        holder.deleteItem.setVisible(false);
+        //holder.deleteItem.setVisible(false);
         SearchView searchView = (SearchView) holder.searchItem.getActionView();
         searchView.setQueryHint("Search Message");
         searchView.setOnQueryTextListener(this);

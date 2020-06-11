@@ -36,7 +36,7 @@
             android:layout_alignParentStart="true"
             android:foregroundTint="#FFFFFF"
             android:contentDescription="@string/descr_iv_emoticons"
-            app:srcCompat="@drawable/emoji_button" />
+            app:srcCompat="@drawable/ic_emoji_button" />
 
         <ImageView
             android:id="@+id/ivModCriptata"
@@ -45,7 +45,7 @@
             android:layout_marginEnd="0dp"
             android:layout_toStartOf="@+id/ivInviaMessaggio"
             android:contentDescription="@string/descr_iv_aes"
-            app:srcCompat="@drawable/no_aes" />
+            app:srcCompat="@drawable/ic_no_aes" />
 
         <EditText
             android:id="@+id/etInserisciMessaggio"
@@ -67,6 +67,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:contentDescription="@string/descr_iv_invia_messaggio"
-            app:srcCompat="@drawable/invia" />
+            app:srcCompat="@drawable/ic_invia" />
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
