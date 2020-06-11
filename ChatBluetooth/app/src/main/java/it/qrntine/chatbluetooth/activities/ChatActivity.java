@@ -28,6 +28,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import com.hardik.clickshrinkeffect.ClickShrinkEffectKt;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -285,7 +287,9 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             ivInviaMessaggio.setOnClickListener(this);
             ivModCriptata.setOnClickListener(this);
             ivSmileBtn.setOnClickListener(this);
-
+            ClickShrinkEffectKt.applyClickShrink(ivSmileBtn);
+            ClickShrinkEffectKt.applyClickShrink(ivModCriptata);
+            ClickShrinkEffectKt.applyClickShrink(ivInviaMessaggio);
             // RV messaggi chat
             rvChat = findViewById(R.id.rvChat);
             rvChat.setAdapter(new ChatBluetoothAdapter(messaggi));
@@ -379,8 +383,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + dati);
         }
 
-
-
         @NonNull
         @Override
         public ChatBluetoothAdapter.ChatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -388,6 +390,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                     parent, false);
             rl.setOnClickListener(this);
             rl.setOnLongClickListener(this);
+            ClickShrinkEffectKt.applyClickShrink(rl);
             return new ChatHolder(rl);
         }
 
@@ -442,12 +445,10 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             }
             if(checkExistance(dati.get(position), selectedMessages)){ //se esiste nell'array selezionati evidenzialo
                 holder.itemView.setBackgroundColor(getColor(R.color.colorBGSelected));
-                //holder.cvChat.setCardBackgroundColor(getColor(R.color.colorSelected));
+                holder.cvChat.setCardBackgroundColor(getColor(R.color.colorSelected));
             }
             else{ //altrimenti niente effetto visivo
-
                 holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                //holder.cvChat.setCardBackgroundColor(getColor(R.color.colorDestinatario));
             }
         }
 

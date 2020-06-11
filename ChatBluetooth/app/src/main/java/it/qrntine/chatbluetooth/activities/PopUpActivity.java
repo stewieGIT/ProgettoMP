@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hardik.clickshrinkeffect.ClickShrinkEffectKt;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -54,7 +56,6 @@ public class PopUpActivity extends Activity {
         Holder() {
             rvEmoji = findViewById(R.id.rvEmoji2);
             listaEmoji = EmoticonsManager.listKeywords();
-
             RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(PopUpActivity.this, LinearLayoutManager.HORIZONTAL, false);
             rvEmoji.setLayoutManager(layoutManager);
             RecyclerView.Adapter emojiRvAdapter = new EmojiRvAdapter(listaEmoji);
@@ -78,7 +79,7 @@ public class PopUpActivity extends Activity {
             View nameView = inflater.inflate(R.layout.layout_pop, parent, false);
 
             nameView.setOnClickListener(this);
-
+            ClickShrinkEffectKt.applyClickShrink(nameView);
             return new ViewHolder(nameView);
         }
 

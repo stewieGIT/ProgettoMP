@@ -14,17 +14,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.hardik.clickshrinkeffect.ClickShrinkEffect;
+import com.hardik.clickshrinkeffect.ClickShrinkEffectKt;
+
 import java.util.ArrayList;
 import java.util.List;
 import it.qrntine.chatbluetooth.Constants;
@@ -153,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
             btnSearch.setTypeface(Typeface.DEFAULT_BOLD);
             btnAvviaRicerca.setOnClickListener(this);
             btnChat.setOnClickListener(this);
+            ClickShrinkEffectKt.applyClickShrink(btnAvviaRicerca);
+            btnSearch.setAlpha(0.7f);
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
             rvDevices.setLayoutManager(layoutManager);
             rvAdapter = new RecycleAdapter(devices);
@@ -205,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
                 LayoutInflater inflater = LayoutInflater.from(context);
                 View nameView = inflater.inflate(R.layout.layout_main, parent, false);
                 nameView.setOnClickListener(this);
+                ClickShrinkEffectKt.applyClickShrink(nameView);
                 return new ViewHolder(nameView);
             }
 

@@ -22,6 +22,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+
+import com.hardik.clickshrinkeffect.ClickShrinkEffectKt;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -123,6 +126,7 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
             btnTabChat.setEnabled(false);
             btnTabChat.setTypeface(Typeface.DEFAULT_BOLD);
             btnTabRicerca.setOnClickListener(this);
+            btnTabChat.setAlpha(0.7f);
             rvChatList=findViewById(R.id.rvChatList);
             rvChatList.setAdapter(new ChatListAdapter(chatDevices));
             rvChatList.setLayoutManager(new LinearLayoutManager(ChatListActivity.this));
@@ -154,6 +158,7 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
                     .inflate(R.layout.layout_chat_list, parent, false);
             cl.setOnClickListener(this);
             cl.setOnLongClickListener(this);
+            ClickShrinkEffectKt.applyClickShrink(cl);
             return new ChatHolder(cl);
         }
 
