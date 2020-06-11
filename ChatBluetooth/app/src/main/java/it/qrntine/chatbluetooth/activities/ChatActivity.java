@@ -501,7 +501,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         MenuItem searchItem = menu.findItem(R.id.search_menu);
         MenuItem deleteItem = menu.findItem(R.id.delete_menu);
@@ -509,7 +508,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search Message");
         searchView.setOnQueryTextListener(this);
-
         return true;
     }
 

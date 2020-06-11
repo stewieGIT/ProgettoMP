@@ -24,4 +24,7 @@ public interface MessaggioDAO {
 
     @Query("DELETE FROM messaggio WHERE Destinatario = :destinatario OR Mittente = :destinatario")
     void cancellaMessaggiDestinatario(String destinatario);
+
+    @Query("DELETE FROM messaggio")
+    void cancellatutto();
 }

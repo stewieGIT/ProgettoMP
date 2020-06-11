@@ -35,6 +35,7 @@ import it.qrntine.chatbluetooth.R;
 import it.qrntine.chatbluetooth.bluetooth.BluetoothSession;
 import it.qrntine.chatbluetooth.database.AppDatabase;
 import it.qrntine.chatbluetooth.database.CancellaThreadDB;
+import it.qrntine.chatbluetooth.database.CancellaTuttoThreadDB;
 import it.qrntine.chatbluetooth.database.Messaggio;
 import it.qrntine.chatbluetooth.database.QueryThreadDB;
 import it.qrntine.chatbluetooth.decorator.DecoratorRecyclerView;
@@ -106,6 +107,15 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
                 }
                 else{
                     Toast.makeText(ChatListActivity.this, getString(R.string.no_chat_to_delete), Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+        if(item.getItemId()==R.id.delete_all){
+            if(selectedChats != null) {
+                if (selectedChats.size() > 0) {
+                    CancellaTuttoThreadDB can = new CancellaTuttoThreadDB(db);
+                    Thread cancella = new Thread(can);
+                    cancella.start();
                 }
             }
         }
@@ -237,6 +247,8 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_chatlist, menu);
         MenuItem deleteItem = menu.findItem(R.id.delete_menu_chatlist);
+        MenuItem deleteAll= menu.findItem(R.id.delete_all);
+        deleteAll.setOnMenuItemClickListener(this);
         deleteItem.setOnMenuItemClickListener(this);
         return true;
     }

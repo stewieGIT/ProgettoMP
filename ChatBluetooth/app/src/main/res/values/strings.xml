@@ -22,6 +22,7 @@
     <string name="descr_iv_invia_messaggio">Invia messaggio</string>
     <string name="descr_iv_aes">Attiva_Disattiva AES</string>
     <string name="descr_iv_emoticons">Emoticons</string>
+    <string name="menu_delete_all">Cancella tutte le chat</string>
     <!-- non tradurre altrimenti il db non funziona -->
     <string name="messaggi">messaggi</string>
 
