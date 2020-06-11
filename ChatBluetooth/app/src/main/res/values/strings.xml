@@ -16,6 +16,7 @@
     <string name="avvia_ricerca">Avvia ricerca</string>
     <string name="interrompi_ricerca">Interrompi ricerca</string>
     <string name="chat_deleted">Chat eliminata</string>
+    <string name="chats_deleted">Chat eliminate</string>
     <string name="no_chat_to_delete">Non ci sono chat da eliminare</string>
     <string name="message_deleted">Messaggio eliminato</string>
     <string name="no_message_to_delete">Non ci sono messaggi da eliminare</string>

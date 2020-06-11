@@ -1,5 +1,6 @@
 package it.qrntine.chatbluetooth.activities;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -188,6 +190,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                     Toast.makeText(ChatActivity.this, getString(R.string.no_message_to_delete), Toast.LENGTH_LONG).show();
                 }
             }
+            holder.deleteItem.setVisible(false);
         }
 
         return false;
@@ -277,7 +280,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         private RecyclerView rvChat;
         private EditText etInserisciMessaggio;
         private ImageView ivInviaMessaggio, ivModCriptata, ivSmileBtn;
-
+        private MenuItem deleteItem, searchItem;
         public Holder() {
             rlInsertMessage = findViewById(R.id.rlInsertMessage);
             etInserisciMessaggio = findViewById(R.id.etInserisciMessaggio);
@@ -343,6 +346,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
             if (v.getId() == R.id.ivSmileBtn) { // apri popup emoji
                 // Rendo invisibile relative layout di inserimento messaggi
+                hideKeyboard(ChatActivity.this);
                 holder.rlInsertMessage.setVisibility(View.INVISIBLE);
 
                 Intent intent = new Intent(ChatActivity.this, PopUpActivity.class);
@@ -364,7 +368,10 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                 if (resultCode == RESULT_OK) {
                     assert data != null;
                     String kwEmoji = data.getStringExtra("kwEmoji");
-                    holder.etInserisciMessaggio.append(kwEmoji);    // inserisco la keyword nell'etMessaggio
+                    MetaMessaggio metaMessaggio = new MetaMessaggio();
+                    metaMessaggio.setTesto(kwEmoji.getBytes());
+                    //System.out.println(">>>>>>>>>>>>>>>>>>>>MSG UNCRYPTED: " + metaMessaggio);
+                    session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
                 } else {
                     System.out.println("Nessuna emoji selezionata");
                 }
@@ -470,9 +477,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
             if(!checkExistance(dati.get(position), selectedMessages)){ //se l'elemento non esiste aggiungilo
                 selectedMessages.add(dati.get(position));
+                holder.deleteItem.setVisible(true);
                 //Toast.makeText(ChatActivity.this, "Selected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
             }else{ //altrimenti no
+                holder.deleteItem.setVisible(false);
                 selectedMessages.remove(dati.get(position));
                 //Toast.makeText(ChatActivity.this, "Unselected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
@@ -502,10 +511,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_chat, menu);
-        MenuItem searchItem = menu.findItem(R.id.search_menu);
-        MenuItem deleteItem = menu.findItem(R.id.delete_menu);
-        deleteItem.setOnMenuItemClickListener(this);
-        SearchView searchView = (SearchView) searchItem.getActionView();
+        holder.searchItem = menu.findItem(R.id.search_menu);
+        holder.deleteItem = menu.findItem(R.id.delete_menu);
+        holder.deleteItem.setOnMenuItemClickListener(this);
+        holder.deleteItem.setVisible(false);
+        SearchView searchView = (SearchView) holder.searchItem.getActionView();
         searchView.setQueryHint("Search Message");
         searchView.setOnQueryTextListener(this);
         return true;
@@ -518,6 +528,17 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             }
         }
         return false;
+    }
+
+    void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
 

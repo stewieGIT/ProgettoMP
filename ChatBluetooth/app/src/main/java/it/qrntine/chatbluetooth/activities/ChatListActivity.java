@@ -111,14 +111,24 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
             }
         }
         if(item.getItemId()==R.id.delete_all){
-            if(selectedChats != null) {
-                if (selectedChats.size() > 0) {
+                if (chatDevices.size() > 0) {
                     CancellaTuttoThreadDB can = new CancellaTuttoThreadDB(db);
                     Thread cancella = new Thread(can);
                     cancella.start();
+                    try {
+                        cancella.join();
+                        chatDevices.clear();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(ChatListActivity.this, getString(R.string.chats_deleted), Toast.LENGTH_LONG).show();
+                    holder.rvChatList.getAdapter().notifyDataSetChanged();
+                }
+            else{
+                Toast.makeText(ChatListActivity.this, getString(R.string.no_chat_to_delete), Toast.LENGTH_LONG).show();
                 }
             }
-        }
+        holder.deleteItem.setVisible(false);
 
         return false;
     }
@@ -127,9 +137,10 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         Button btnTabRicerca, btnTabChat;
         TextView tvTueConv;
         RecyclerView rvChatList;
+        MenuItem deleteItem;
+        MenuItem deleteAll;
 
         public Holder(){
-
             tvTueConv=findViewById(R.id.tvTueConversazioni);
             btnTabChat=findViewById(R.id.btnTabChat);
             btnTabRicerca=findViewById(R.id.btnTabRicerca);
@@ -210,10 +221,12 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
         public boolean onLongClick(View v) {
             int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
             if(!checkExistance(data.get(position), selectedChats)){ //se l'elemento non esiste aggiungilo
+                holder.deleteItem.setVisible(true);
                 selectedChats.add(data.get(position));
                 //Toast.makeText(ChatListActivity.this, "Selected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
             }else{ //altrimenti no
+                holder.deleteItem.setVisible(false);
                 selectedChats.remove(data.get(position));
                 //Toast.makeText(ChatListActivity.this, "Unselected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
@@ -246,10 +259,11 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_chatlist, menu);
-        MenuItem deleteItem = menu.findItem(R.id.delete_menu_chatlist);
-        MenuItem deleteAll= menu.findItem(R.id.delete_all);
-        deleteAll.setOnMenuItemClickListener(this);
-        deleteItem.setOnMenuItemClickListener(this);
+        holder.deleteItem = menu.findItem(R.id.delete_menu_chatlist);
+        holder.deleteItem.setVisible(false);
+        holder.deleteAll= menu.findItem(R.id.delete_all);
+        holder.deleteAll.setOnMenuItemClickListener(this);
+        holder.deleteItem.setOnMenuItemClickListener(this);
         return true;
     }
 
