@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ChatBluetooth</string>
+    <string name="search">  Scan  </string>
+    <string name="chat">  Chat  </string>
+    <string name="btnSend">Send</string>
+    <string name="hint_message">Insert message</string>
+    <string name="menu_chatlist_delete">Delete</string>
+    <string name="error_user_disconnected">The user is disconnected</string>
+    <string name="inizio_ricerca">Scanning...</string>
+    <string name="fine_ricerca">Scan complete</string>
+    <string name="stop_ricerca">Scan stopped</string>
+    <string name="main_title">Bluetooth chat</string>
+    <string name="chat_list">Chat list</string>
+    <string name="connessione">Connecting...</string>
+    <string name="risultati_ricerca">Scan results:</string>
+    <string name="avvia_ricerca">Scan</string>
+    <string name="interrompi_ricerca">Stop</string>
+    <string name="chat_deleted">Chat deleted</string>
+    <string name="no_chat_to_delete">There are no chats to delete</string>
+    <string name="message_deleted">Message deleted</string>
+    <string name="no_message_to_delete">There are no messages to delete</string>
+    <string name="descr_iv_invia_messaggio">Send message</string>
+    <string name="descr_iv_aes">On_Off_AES</string>
+    <string name="descr_iv_emoticons">Emoticons</string>
+    <string name="messaggi">messaggi</string>
+</resources>

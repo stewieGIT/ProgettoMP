@@ -18,6 +18,7 @@ public final class Constants {
     public static final String NAME_INSECURE = "BluetoothChatInsecure";
 
     // Unique UUID for this application
+    public static final String EXTRA_DEVICE_ADDRESS = "device_address";
     public static final UUID MY_UUID_SECURE =
             UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
     public static final UUID MY_UUID_INSECURE =

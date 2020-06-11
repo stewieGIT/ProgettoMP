@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ChatBluetooth</string>
     <string name="search">  Ricerca  </string>
@@ -22,9 +23,5 @@
     <string name="descr_iv_invia_messaggio">Invia messaggio</string>
     <string name="descr_iv_aes">Attiva_Disattiva AES</string>
     <string name="descr_iv_emoticons">Emoticons</string>
-    <!-- non tradurre altrimenti il db non funziona -->
     <string name="messaggi">messaggi</string>
-
-
-
 </resources>

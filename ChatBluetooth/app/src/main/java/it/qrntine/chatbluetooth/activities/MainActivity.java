@@ -34,12 +34,10 @@ import it.qrntine.chatbluetooth.R;
 import it.qrntine.chatbluetooth.database.AppDatabase;
 
 public class MainActivity extends AppCompatActivity {
-    public static String EXTRA_DEVICE_ADDRESS = "device_address";
-    private AppDatabase db;
     private Holder holder;
     private Handler mHandler;
     private static boolean RECEIVER_REGISTERED = false;
-    private BluetoothSession session =BluetoothSession.getInstance();
+    private BluetoothSession session = BluetoothSession.getInstance();
     private List<String> devices = new ArrayList<>();   //serve solo per la stampa dei nomi nella recycler (DEBUG)
     private List<BluetoothDevice> objDevices = new ArrayList<>();   //lista di oggetti Bluetooth device
 
@@ -71,12 +69,6 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, REQUEST_CODE);
             }
         }  //  END VERIFICA PERMESSI
-
-        // SET DISCOVERABLE
-        Intent discoverableIntent =
-                new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-        startActivity(discoverableIntent);
 
         //HANDLER SETUP
           mHandler = new Handler(new Handler.Callback() {
@@ -112,6 +104,13 @@ public class MainActivity extends AppCompatActivity {
         } ) ;
 
         session.setmBluetoothChatService(new BluetoothChatService(MainActivity.this, mHandler));
+        // SET DISCOVERABLE
+        if(session.getmBluetoothChatService().getmAdapter().getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoverableIntent =
+                    new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            startActivity(discoverableIntent);
+        }
         session.getmBluetoothChatService().start();
 
         holder = new Holder();
@@ -134,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
             unregisterReceiver(mReceiver);
             RECEIVER_REGISTERED = false;
         }
-
     }
 
     class Holder implements View.OnClickListener{

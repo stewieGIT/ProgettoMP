@@ -79,7 +79,6 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        finish();
     }
 
     @Override

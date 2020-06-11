@@ -179,11 +179,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                         messaggi.remove(messaggio);
                     }
                     selectedMessages.clear(); //puliamo l'array
-                    Toast.makeText(ChatActivity.this, "Chat deleted", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChatActivity.this, getString(R.string.message_deleted), Toast.LENGTH_LONG).show();
                     holder.rvChat.getAdapter().notifyDataSetChanged();
                 }
                 else{
-                    Toast.makeText(ChatActivity.this, "No chat to delete", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChatActivity.this, getString(R.string.no_message_to_delete), Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -469,11 +469,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
             if(!checkExistance(dati.get(position), selectedMessages)){ //se l'elemento non esiste aggiungilo
                 selectedMessages.add(dati.get(position));
-                Toast.makeText(ChatActivity.this, "Selected Chat", Toast.LENGTH_LONG).show();
+                //Toast.makeText(ChatActivity.this, "Selected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
             }else{ //altrimenti no
                 selectedMessages.remove(dati.get(position));
-                Toast.makeText(ChatActivity.this, "Unselected Chat", Toast.LENGTH_LONG).show();
+                //Toast.makeText(ChatActivity.this, "Unselected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
             }
             return true;
