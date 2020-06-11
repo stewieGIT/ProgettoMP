@@ -3,6 +3,7 @@ package it.qrntine.chatbluetooth.activities;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -121,6 +122,7 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
             btnTabChat=findViewById(R.id.btnTabChat);
             btnTabRicerca=findViewById(R.id.btnTabRicerca);
             btnTabChat.setEnabled(false);
+            btnTabChat.setTypeface(Typeface.DEFAULT_BOLD);
             btnTabRicerca.setOnClickListener(this);
             rvChatList=findViewById(R.id.rvChatList);
             rvChatList.setAdapter(new ChatListAdapter(chatDevices));

@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.IOException;
 import java.util.List;
 
 import it.qrntine.chatbluetooth.R;
@@ -23,7 +24,7 @@ import it.qrntine.chatbluetooth.emoticons.EmoticonsManager;
 
 public class PopUpActivity extends Activity {
 
-    List<Integer> listaEmoji;
+    List<String> listaEmoji;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +35,12 @@ public class PopUpActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int height = dm.heightPixels;
         int width = dm.widthPixels;
-
-        //int heightEmojiBar = getIntent().getIntExtra("heightEmojiBar", height);
-
-        getWindow().setLayout(width, (int)(height*.2));
+        getWindow().setLayout(width, (int)(height*.3));
 
         WindowManager.LayoutParams params = getWindow().getAttributes();
-
         params.gravity = Gravity.BOTTOM;
         params.x = 0;
         params.y = 0;
-        //params.alpha = 0.3f;
 
         getWindow().setAttributes(params);
 
@@ -56,7 +52,7 @@ public class PopUpActivity extends Activity {
 
         Holder() {
             recyclerView = findViewById(R.id.rvEmoji2);
-            listaEmoji = EmoticonsManager.getListEmojiRes();
+            listaEmoji = EmoticonsManager.listKeywords();
 
             RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(PopUpActivity.this, LinearLayoutManager.HORIZONTAL, false);
             recyclerView.setLayoutManager(layoutManager);
@@ -66,9 +62,9 @@ public class PopUpActivity extends Activity {
     }
 
     public class EmojiRvAdapter extends RecyclerView.Adapter<EmojiRvAdapter.ViewHolder> implements View.OnClickListener {
-        private List<Integer> listaDrawablesInt;
+        private List<String> listaDrawablesInt;
 
-        EmojiRvAdapter(List<Integer> mIngr){
+        EmojiRvAdapter(List<String> mIngr){
             listaDrawablesInt = mIngr;
         }
 
@@ -88,7 +84,11 @@ public class PopUpActivity extends Activity {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             ImageView iv = holder.ivEmoji;
-            iv.setImageDrawable(getDrawable(listaDrawablesInt.get(position)));
+            try {
+                iv.setImageDrawable(EmoticonsManager.selectEmojiByKeyword(listaDrawablesInt.get(position), PopUpActivity.this));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -99,7 +99,7 @@ public class PopUpActivity extends Activity {
         @Override
         public void onClick(View v) {
             int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
-            String emoji = EmoticonsManager.selectKeywordByEmoji(listaEmoji.get(position));
+            String emoji = listaEmoji.get(position);
             //Toast.makeText(PopUpActivity.this, "Select: " + position + " " + emoji, Toast.LENGTH_LONG).show();
 
             Intent intent = new Intent();

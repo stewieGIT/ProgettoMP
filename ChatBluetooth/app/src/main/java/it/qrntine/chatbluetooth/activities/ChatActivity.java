@@ -27,6 +27,8 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -394,28 +396,23 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
             String msg = (dati.get(position).testo);
 
-            boolean isEmojiMsg = false; // var per controllare se messaggio e' emoji
-            int emojiRes = 0;   // var per ritorno resource emoji
-
-            // controllo se il messaggio inizia con ":"
-            if (msg.startsWith(":")) {   //potrebbe esserci emoji
-                emojiRes = EmoticonsManager.selectEmojiByKeyword(msg);  //verifico
-                if (emojiRes != 0) isEmojiMsg = true;
-            }
-
             // se emoji
-            if(isEmojiMsg) {
+            if(EmoticonsManager.isEmojiKeyword(msg)) {
                 holder.tvMessaggio.setText(null);   //campo testo nullo. Se si desidera e' possibile inserire del testo e gestire la posizione della emoji nella textview cambiando i parametri della setCompoundDrawablesRelativeWithIntrinsicBounds().
-                holder.tvMessaggio.setCompoundDrawablesRelativeWithIntrinsicBounds(getDrawable(emojiRes), null, null, null);
+                try {
+                    holder.tvMessaggio.setCompoundDrawablesRelativeWithIntrinsicBounds(EmoticonsManager.selectEmojiByKeyword(msg, ChatActivity.this), null, null, null);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            // messaggio testuale
+                // messaggio testuale
             } else {
                 holder.tvMessaggio.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null); //campo drawable nullo
 
                 //se il messaggio non presenta tag html effettuo il parsing di possibili notazioni markdown
                 if (!msg.matches("(<(.+)*>)*")) {
                     int n;
-                    for (int i = 1; i < 4; i++) {
+                    for (int i = 1; i < 5; i++) {
                         msg = ParserMarkdown.parserString(msg, i);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
                     }
                 }

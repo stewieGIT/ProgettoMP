@@ -1,7 +1,5 @@
 package it.qrntine.chatbluetooth.markdown;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /***
@@ -12,19 +10,21 @@ import java.util.regex.Pattern;
  *
  *   GRASSETTO              ...**string**...          <b>string</b>
  *   CORSIVO                ...*string*...            <em>string</em>
- *   HEADER                 #string                   <h1>string</h1>
+ *   CANCELLATO             ...~string~...            <s>string</s>
+ *   HEADER                 #string#                   <h1>string</h1>
  *
  */
 
 public class ParserMarkdown {
 
     /*
-     * REGEX CASI PARSING
+     * REGEX CASI
      */
-    public static final String splitterBold = "(.+)*((\\*\\*)(.+)(\\*\\*)(.+))*"; // ..**...**..
+    public static final String regex_bold = "(.+)*((\\*\\*)(.+)(\\*\\*)(.+))*"; // ..**...**..
     //public static final String splitterCursive = "((\\*?)(.+?)(\\*?))*";  // ..*...*..
-    public static final String splitterCursive = "(.+)*((\\*{1})(.+)(\\*{1}))*";
-    public static final String splitterHeader = "(.+)*((#)(.+)(#))*";
+    public static final String regex_cursive = "(.+)*((\\*{1})(.+)(\\*{1}))*";
+    public static final String regex_header = "(.+)*((#)(.+)(#))*";
+    public static final String regex_cancellato = "(.+)*((~)(.+)(~))*";
 
     /*
      * REGEX MARKERS
@@ -32,6 +32,7 @@ public class ParserMarkdown {
     public static final String markerBold = "(\\*\\*)";
     public static final String markerEmphasis = "(\\*)";
     public static final String markerHeader = "(#)";
+    public static final String markerCancellato = "(~)";
 
     /*
      * TAG HTML
@@ -45,6 +46,9 @@ public class ParserMarkdown {
     public static final String startTagHeader = "<h1>";
     public static final String endTagHeader = "</h1>";
 
+    public static final String startTagCancellato = "<s>";
+    public static final String endTagCancellato = "</s>";
+
 
     /***
      * (PREDISPOSIZIONE)
@@ -54,7 +58,7 @@ public class ParserMarkdown {
      */
     public static int selectParser(String msg) {
 
-        String[] splitters = {splitterBold, splitterCursive, splitterHeader};
+        String[] splitters = {regex_bold, regex_cursive, regex_header};
         for (int i=0; i<splitters.length; i++) {
             Pattern pattern = Pattern.compile(splitters[i]);
             if (pattern.matcher(msg).matches()) return i+1;
@@ -70,7 +74,7 @@ public class ParserMarkdown {
      */
     public static String parserString(String msg, int caso) {
 
-        System.out.println("Messaggio inserito: \n" + msg);
+        //System.out.println("Messaggio inserito: \n" + msg);
 
         String msgParsato = "";
         String[] lista;
@@ -99,6 +103,13 @@ public class ParserMarkdown {
                 startTag = startTagHeader;
                 endTag = endTagHeader;
                 strRegex = markerHeader;
+                break;
+
+            case 4:
+                //caso cancellato
+                startTag = startTagCancellato;
+                endTag = endTagCancellato;
+                strRegex = markerCancellato;
                 break;
 
             default:
@@ -149,7 +160,7 @@ public class ParserMarkdown {
             }
         } // END CASO SOTTOSTRINGHE PARI
 
-        System.out.println("Messaggio parsato:  \n" + msgParsato);
+        //System.out.println("Messaggio parsato:  \n" + msgParsato);
 
         return msgParsato;
     } // END parser

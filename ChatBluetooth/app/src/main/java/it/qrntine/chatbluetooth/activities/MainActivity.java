@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -151,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
             rvDevices=findViewById(R.id.rvDevices);
             cvDevice = findViewById(R.id.cvDevice);
             btnSearch.setEnabled(false);
+            btnSearch.setTypeface(Typeface.DEFAULT_BOLD);
             btnAvviaRicerca.setOnClickListener(this);
             btnChat.setOnClickListener(this);
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
