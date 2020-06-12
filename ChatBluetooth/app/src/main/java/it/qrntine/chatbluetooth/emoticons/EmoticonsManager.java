@@ -22,7 +22,6 @@ public class EmoticonsManager {
     public static final String emVirus = ":virus:";
     public static final String emDrago = ":drago:";
     public static final String emRosa = ":rosa:";
-    public static final String emBomba = ":bomba:";
     public static final String emBowling = ":bowling:";
     public static final String emFiore = ":fiore:";
     public static final String emScimmia = ":scimmia:";
@@ -43,99 +42,18 @@ public class EmoticonsManager {
 
         Drawable drawableEmoji = null;
 
-        // opzioni per visualizzare la risorsa asset a grandezza piena, altrimenti viene rimpicciolita
-        BitmapFactory.Options opts = new BitmapFactory.Options();
-        opts.inDensity = DisplayMetrics.DENSITY_HIGH;
+        String subDir = "emoticons/";   //sub directory che contiene i file delle emoticons, in assets folder
 
-        switch (msg) {
-            case (emSmile):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "smile.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "smile.png"), null, opts);
-                break;
+        String nomeFile = msg.replaceAll(":", "");  // prendo il nome del file, che corrisponde al nome della keyword senza i ":"
 
-            case (emVirus):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "virus.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "virus.png"), null, opts);
-                break;
-
-            case (emDrago):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "drago.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "drago.png"), null, opts);
-                break;
-
-            case (emRosa):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "rosa.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "rosa.png"), null, opts);
-                break;
-
-            case (emBomba):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "bomb.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "bomb.png"), null, opts);
-                break;
-
-            case (emBowling):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "bowling.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "bowling.png"), null, opts);
-                break;
-
-            case (emFiore):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "fiore.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "fiore.png"), null, opts);
-                break;
-
-            case (emScimmia):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "scimmia.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "scimmia.png"), null, opts);
-                break;
-
-            case (emFoglie):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "foglie.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "foglie.png"), null, opts);
-                break;
-
-            case (emLeone):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "leone.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "leone.png"), null, opts);
-                break;
-
-            case (emPappagallo):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "pappagallo.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "pappagallo.png"), null, opts);
-                break;
-
-            case (emRana):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "rana.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "rana.png"), null, opts);
-                break;
-
-            case (emTigre):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "tigre.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "tigre.png"), null, opts);
-                break;
-
-            case (emRugby):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "rugby.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "rugby.png"), null, opts);
-                break;
-
-            case (emMaple):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "maple.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "maple.png"), null, opts);
-                break;
-
-            case (emAlbero):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "albero.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "albero.png"), null, opts);
-                break;
-
-            case (emCactus):
-                //drawableEmoji = Drawable.createFromStream(context.getResources().getAssets().open("emoticons/" + "cactus.png"), null);
-                drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open("emoticons/" + "cactus.png"), null, opts);
-                break;
-
-            default:
-                break;
+        if(isEmojiKeyword(msg)) {
+            // opzioni per visualizzare la risorsa asset a grandezza piena, altrimenti viene rimpicciolita
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inDensity = DisplayMetrics.DENSITY_HIGH;
+            // settaggio del drawable
+            drawableEmoji = Drawable.createFromResourceStream(context.getResources(), null, context.getResources().getAssets().open(subDir + nomeFile + ".png"), null, opts);
         }
+
         return drawableEmoji;
     }
 
@@ -144,7 +62,7 @@ public class EmoticonsManager {
     Ritorna una lista delle keywords
      */
     public static List<String> listKeywords() {
-        return Arrays.asList(emSmile, emVirus, emDrago, emRosa, emBomba, emBowling, emFiore, emScimmia, emFoglie, emLeone, emPappagallo, emRana, emTigre, emRugby, emMaple, emAlbero, emCactus);
+        return Arrays.asList(emSmile, emVirus, emDrago, emRosa, emBowling, emFiore, emScimmia, emFoglie, emLeone, emPappagallo, emRana, emTigre, emRugby, emMaple, emAlbero, emCactus);
     }
 
 

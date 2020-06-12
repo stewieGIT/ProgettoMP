@@ -57,23 +57,6 @@ public class ParserMarkdown {
 
 
     /***
-     * (PREDISPOSIZIONE)
-     * Indica quale case va effettuato nel metodo parserString
-     * @param msg
-     * @return int
-     */
-    public static int selectParser(String msg) {
-
-        String[] splitters = {regex_bold, regex_cursive, regex_header};
-        for (int i=0; i<splitters.length; i++) {
-            Pattern pattern = Pattern.compile(splitters[i]);
-            if (pattern.matcher(msg).matches()) return i+1;
-        }
-        return 0;
-
-    }
-
-    /***
      * Parser per marker "Header". Se viene inserito "." al termine dell'header, la
      * formattazione andra' a capo e proseguira' con un paragrafo. Altrimenti rende header l'intero
      * messaggio ricevuto in input.
@@ -144,7 +127,7 @@ public class ParserMarkdown {
                  */
 
             default:
-                //nessun caso da parsare
+                //nessun caso da esaminare
                 return msg;
 
         }
@@ -153,6 +136,7 @@ public class ParserMarkdown {
 
         // CASO SOTTOSTRINGHE DISPARI
         if((lista.length % 2) != 0) {	//se ottengo un numero dispari di sottostringhe, metto il tag bold prima e dopo ogni sottostringa pari
+
             for(int i=0; i<lista.length; i++) {
                 if((i%2) == 0) {
                     msgParsato += lista[i];
@@ -160,14 +144,14 @@ public class ParserMarkdown {
                     msgParsato += startTag + lista[i] + endTag;
                 }
             }
-        } // END CASO SOTTOSTRINGHE DISPARI
 
+        } // END CASO SOTTOSTRINGHE DISPARI
 
         // CASO SOTTOSTRINGHE PARI
         if((lista.length % 2) == 0) {	//se ottengo un numero pari di sottostringhe, metto il tag bold prima e dopo ogni sottostringa eccetto l'ultima pari
 
             for(int i=0; i<lista.length; i++) {
-                if(i == lista.length-1) {	//caso: **si** **no   ->   devo escludere gli ultimi **
+                if(i == lista.length-1) {	//e.g. "**si** **no"
                     msgParsato += lista[i];
                     break;
                 }
@@ -177,11 +161,29 @@ public class ParserMarkdown {
                     msgParsato += startTag + lista[i] + endTag;
                 }
             }
+
         } // END CASO SOTTOSTRINGHE PARI
 
         //System.out.println("Messaggio parsato:  \n" + msgParsato);
 
         return msgParsato;
 
-    } // END parser
+    }
+
+    /***
+     * (PREDISPOSIZIONE)
+     * Indica quale regex viene riscontrata, quindi quale parser applicare
+     * @param msg
+     * @return int
+     */
+    public static int selectParser(String msg) {
+
+        String[] splitters = {regex_bold, regex_cursive, regex_header};
+        for (int i=0; i<splitters.length; i++) {
+            Pattern pattern = Pattern.compile(splitters[i]);
+            if (pattern.matcher(msg).matches()) return i+1;
+        }
+        return 0;
+
+    }
 }
