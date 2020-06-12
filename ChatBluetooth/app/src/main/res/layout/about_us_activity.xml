@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/llAboutUs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvAboutUs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textAlignment="center"
+            android:text="@string/about_us" />
+
+        <ImageView
+            android:id="@+id/ivAboutUs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/about_us" />
+
+        <TextView
+            android:id="@+id/tvNomeGruppo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/nome_gruppo" />
+
+        <TextView
+            android:id="@+id/tvMembriGruppo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:textAlignment="center"
+            android:text="@string/membri_gruppo" />
+
+        <TextView
+            android:id="@+id/tvNomeProgetto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:textAlignment="center"
+            android:text="@string/nome_progetto" />
+
+        <TextView
+            android:id="@+id/tvNomeCorso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:textAlignment="center"
+            android:text="@string/nome_corso" />
+    </LinearLayout>
+</ScrollView>
