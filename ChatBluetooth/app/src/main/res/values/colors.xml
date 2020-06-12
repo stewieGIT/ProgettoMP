@@ -10,4 +10,5 @@
     <color name="colorBGSelected">#FFE7F7FF</color>
     <color name="colorTrasparente">#00FFFFFF</color>
     <color name="colorBianco">#FFFFFF</color>
+    <color name="colorMainCv">#90CAF9</color>
 </resources>

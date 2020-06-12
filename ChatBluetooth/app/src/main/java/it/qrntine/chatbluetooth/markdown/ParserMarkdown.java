@@ -11,7 +11,8 @@ import java.util.regex.Pattern;
  *   GRASSETTO              ...**string**...          <b>string</b>
  *   CORSIVO                ...*string*...            <em>string</em>
  *   CANCELLATO             ...~string~...            <s>string</s>
- *   HEADER                 #string#                   <h1>string</h1>
+ *   HEADER                 #string                   <h1>string</h1>
+ *   HEADER+PARAGRAPH       #string.Other             <h1>string</h1><br><p>Other</p>
  *
  */
 
@@ -49,6 +50,11 @@ public class ParserMarkdown {
     public static final String startTagCancellato = "<s>";
     public static final String endTagCancellato = "</s>";
 
+    public static final String startTagParagraph = "<p>";
+    public static final String endTagParagraph = "</p>";
+
+    public static final String newLineHtml = "<br>";
+
 
     /***
      * (PREDISPOSIZIONE)
@@ -68,11 +74,39 @@ public class ParserMarkdown {
     }
 
     /***
-     * Effettua il parsing di markdown relativi al grassetto, in tag html (e.g. msg = "**si**", msgParsato = "<b>si</b>").
+     * Parser per marker "Header". Se viene inserito "." al termine dell'header, la
+     * formattazione andra' a capo e proseguira' con un paragrafo. Altrimenti rende header l'intero
+     * messaggio ricevuto in input.
+     * ESEMPIO:
+     *          MARKDOWN                 HTML
+     *          #header                  <h1>header</h1>
+     *          #header.Paragrafo ...    <h1>header</h1><br><p>Paragrafo...</p>
+     * @param msg
+     * @return rtn
+     */
+    public static String parserHeaderMarker(String msg) {
+
+        String[] lista;
+
+        // se il messaggio non ha il carattere separatore viene resa header l'intera stringa
+        if (!msg.contains(".")) {
+            return msg.replaceFirst("#", startTagHeader) + endTagHeader;
+        // viene separato l'header dal paragrafo
+        } else {
+            lista = msg.split("\\.");
+            String rtn = lista[0].replace("#", startTagHeader) + endTagHeader + newLineHtml + startTagParagraph + lista[1] + endTagParagraph;
+            return rtn;
+        }
+
+    }
+
+    /***
+     * Effettua il parsing di casi markdown in cui i marker sono all'inizio e alla fine della
+     * stringa che si vuole parsare. (e.g. msg = "**si**", msgParsato = "<b>si</b>").
      * @param msg
      * @return msgParsato
      */
-    public static String parserString(String msg, int caso) {
+    public static String parserStartEndMarker(String msg, int caso) {
 
         //System.out.println("Messaggio inserito: \n" + msg);
 
@@ -99,18 +133,15 @@ public class ParserMarkdown {
                 break;
 
             case 3:
-                //caso header
-                startTag = startTagHeader;
-                endTag = endTagHeader;
-                strRegex = markerHeader;
-                break;
-
-            case 4:
                 //caso cancellato
                 startTag = startTagCancellato;
                 endTag = endTagCancellato;
                 strRegex = markerCancellato;
                 break;
+
+                /*
+                E' possibile inserire nuovi casi relativi ad altri tag
+                 */
 
             default:
                 //nessun caso da parsare
@@ -119,10 +150,6 @@ public class ParserMarkdown {
         }
 
         lista = (msg+" ").split(strRegex);	//ho aggiunto lo spazio " " altrimenti non riconosce l'ultimo nei casi col ** alla fine (e.g. "prova ancora **si** o **no**")
-        //System.out.println("Lungh: " + lista.length);
-        for(int i=0; i<lista.length; i++) {
-            //System.out.println("- " + i + ": " + lista[i]);
-        }
 
         // CASO SOTTOSTRINGHE DISPARI
         if((lista.length % 2) != 0) {	//se ottengo un numero dispari di sottostringhe, metto il tag bold prima e dopo ogni sottostringa pari
@@ -138,14 +165,6 @@ public class ParserMarkdown {
 
         // CASO SOTTOSTRINGHE PARI
         if((lista.length % 2) == 0) {	//se ottengo un numero pari di sottostringhe, metto il tag bold prima e dopo ogni sottostringa eccetto l'ultima pari
-
-			/*	NON VA BENE
-			if(lista.length == 2) {		//caso di singola parola: **si**   ->   non entro proprio nel for
-				msgParsato += startTag + lista[1] + endTag;
-				System.out.println("Messaggio parsato:  \n" + msgParsato);
-				return msgParsato;
-			}
-			*/
 
             for(int i=0; i<lista.length; i++) {
                 if(i == lista.length-1) {	//caso: **si** **no   ->   devo escludere gli ultimi **
@@ -163,5 +182,6 @@ public class ParserMarkdown {
         //System.out.println("Messaggio parsato:  \n" + msgParsato);
 
         return msgParsato;
+
     } // END parser
 }
