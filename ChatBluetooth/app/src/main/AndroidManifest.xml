@@ -25,6 +25,7 @@
         <activity android:name=".activities.ChatActivity"/>
         <activity android:name=".activities.PopUpActivity"
             android:theme="@style/AppTheme.Popup"/>
+        <activity android:name=".activities.AboutUsActivity"/>
     </application>
 
 </manifest>

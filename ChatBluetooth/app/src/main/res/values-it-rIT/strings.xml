@@ -26,4 +26,8 @@
     <string name="messaggi">messaggi</string>
     <string name="menu_delete_all">Cancella tutte le chat</string>
     <string name="chats_deleted">Chat eliminate</string>
+    <string name="nome_gruppo">Gruppo: QR...ntine</string>
+    <string name="membri_gruppo">Membri: Bramucci Adriano, Conti Matteo, Mazzetti Massimo, Picchioni Stefano</string>
+    <string name="nome_progetto">Progetto: Chat Bluetooth</string>
+    <string name="nome_corso">Corso: Mobile Programming 2020</string>
 </resources>

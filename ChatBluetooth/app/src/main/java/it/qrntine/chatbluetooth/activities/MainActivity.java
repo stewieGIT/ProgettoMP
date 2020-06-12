@@ -21,6 +21,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +43,7 @@ import it.qrntine.chatbluetooth.bluetooth.BluetoothSession;
 import it.qrntine.chatbluetooth.R;
 import it.qrntine.chatbluetooth.database.AppDatabase;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MenuItem.OnMenuItemClickListener {
     private Holder holder;
     private Handler mHandler;
     private static boolean RECEIVER_REGISTERED = false;
@@ -142,12 +145,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if(item.getItemId() == R.id.menu_about_us){
+            Intent intent = new Intent(MainActivity.this, AboutUsActivity.class);
+            startActivity(intent);
+        }
+        return true;
+    }
+
     class Holder implements View.OnClickListener{
         Button btnSearch, btnChat, btnAvviaRicerca;
         TextView tvRisultatiRicerca;
         CardView cvDevice;
         RecyclerView rvDevices;
         RecyclerView.Adapter rvAdapter;
+        private MenuItem aboutUsItem;
 
         public Holder(){
             btnSearch=findViewById(R.id.btnSearch);
@@ -256,6 +269,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     //END HOLDER
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        holder.aboutUsItem = menu.findItem(R.id.menu_about_us);
+        holder.aboutUsItem.setOnMenuItemClickListener(this);
+        return true;
+    }
 
     // receiver bluetooth
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
