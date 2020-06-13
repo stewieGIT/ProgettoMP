@@ -24,7 +24,7 @@
             android:id="@+id/ivAboutUs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/about_us" />
+            app:srcCompat="@drawable/ic_about_us" />
 
         <TextView
             android:id="@+id/tvNomeGruppo"

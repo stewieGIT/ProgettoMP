@@ -1,5 +1,7 @@
 package it.qrntine.chatbluetooth.markdown;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /***
@@ -30,10 +32,13 @@ public class ParserMarkdown {
     /*
      * REGEX MARKERS
      */
-    public static final String markerBold = "(\\*\\*)";
-    public static final String markerEmphasis = "(\\*)";
-    public static final String markerHeader = "(#)";
-    public static final String markerCancellato = "(~)";
+    public static final String markerBold = "\\*\\*";
+    public static final String markerEmphasis = "\\*";
+    public static final String markerBold_2 = "__";
+    public static final String markerEmphasis_2 = "_";
+    public static final String markerHeader = "#";
+    public static final String markerCancellato = "~";
+    public static final String markerCode = "`";
 
     /*
      * TAG HTML
@@ -50,38 +55,11 @@ public class ParserMarkdown {
     public static final String startTagCancellato = "<s>";
     public static final String endTagCancellato = "</s>";
 
-    public static final String startTagParagraph = "<p>";
-    public static final String endTagParagraph = "</p>";
+    public static final String startTagCode = "<code>";
+    public static final String endTagCode = "</code>";
 
     public static final String newLineHtml = "<br>";
 
-
-    /***
-     * Parser per marker "Header". Se viene inserito "." al termine dell'header, la
-     * formattazione andra' a capo e proseguira' con un paragrafo. Altrimenti rende header l'intero
-     * messaggio ricevuto in input.
-     * ESEMPIO:
-     *          MARKDOWN                 HTML
-     *          #header                  <h1>header</h1>
-     *          #header.Paragrafo ...    <h1>header</h1><br><p>Paragrafo...</p>
-     * @param msg
-     * @return rtn
-     */
-    public static String parserHeaderMarker(String msg) {
-
-        String[] lista;
-
-        // se il messaggio non ha il carattere separatore viene resa header l'intera stringa
-        if (!msg.contains(".")) {
-            return msg.replaceFirst("#", startTagHeader) + endTagHeader;
-        // viene separato l'header dal paragrafo
-        } else {
-            lista = msg.split("\\.");
-            String rtn = lista[0].replace("#", startTagHeader) + endTagHeader + newLineHtml + startTagParagraph + lista[1] + endTagParagraph;
-            return rtn;
-        }
-
-    }
 
     /***
      * Effettua il parsing di casi markdown in cui i marker sono all'inizio e alla fine della
@@ -101,6 +79,14 @@ public class ParserMarkdown {
         String strRegex;
 
         switch (caso) {
+
+            case 0:
+                //caso header
+                startTag = startTagHeader;
+                endTag = endTagHeader + newLineHtml;  // titolo e a capo
+                strRegex = markerHeader;
+                break;
+
             case 1:
                 //caso bold
                 startTag = startTagBold;
@@ -120,6 +106,27 @@ public class ParserMarkdown {
                 startTag = startTagCancellato;
                 endTag = endTagCancellato;
                 strRegex = markerCancellato;
+                break;
+
+            case 4:
+                //caso bold versione 2
+                startTag = startTagBold;
+                endTag = endTagBold;
+                strRegex = markerBold_2;
+                break;
+
+            case 5:
+                //caso corsivo versione 2
+                startTag = startTagEmphasis;
+                endTag = endTagEmphasis;
+                strRegex = markerEmphasis_2;
+                break;
+
+            case 6:
+                //caso code
+                startTag = startTagCode;
+                endTag = endTagCode;
+                strRegex = markerCode;
                 break;
 
                 /*
@@ -170,6 +177,12 @@ public class ParserMarkdown {
 
     }
 
+
+    public static List<String> listMarkers() {
+        return Arrays.asList(markerHeader, markerBold, markerEmphasis, markerCancellato, markerBold_2, markerEmphasis_2, markerCode);
+    }
+
+
     /***
      * (PREDISPOSIZIONE)
      * Indica quale regex viene riscontrata, quindi quale parser applicare
@@ -181,7 +194,7 @@ public class ParserMarkdown {
         String[] splitters = {regex_bold, regex_cursive, regex_header};
         for (int i=0; i<splitters.length; i++) {
             Pattern pattern = Pattern.compile(splitters[i]);
-            if (pattern.matcher(msg).matches()) return i+1;
+            if (pattern.matcher(msg).matches()) return i;
         }
         return 0;
 

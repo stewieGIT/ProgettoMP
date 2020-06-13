@@ -413,16 +413,13 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             } else {
                 holder.tvMessaggio.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null); //campo drawable nullo
 
-                //se il messaggio non presenta tag html effettuo il parsing di possibili notazioni markdown
+                //se il messaggio non presenta tag html effettuo il parsing di possibili notazioni markdown, altrimenti lo considero gia' parsed
                 if (!msg.matches("(<(.+)*>)*")) {
 
-                    //controllo se il msg contiene il marker header
-                    if(msg.startsWith("#")) {
-                        msg = ParserMarkdown.parserHeaderMarker(msg);
-                    }
-
+                    List<String> markers = ParserMarkdown.listMarkers();
                     //controllo se il msg contiene marker come grassetto, corsivo...
-                    for (int i = 1; i < 4; i++) {
+                    for (int i = 0; i < markers.size(); i++) {
+                        //if(msg.contains(markers.get(i)))
                         msg = ParserMarkdown.parserStartEndMarker(msg, i);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
                     }
                 }
