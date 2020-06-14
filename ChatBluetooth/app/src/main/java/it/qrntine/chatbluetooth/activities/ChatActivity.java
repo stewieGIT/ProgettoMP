@@ -413,22 +413,24 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             } else {
                 holder.tvMessaggio.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null); //campo drawable nullo
 
-                //se il messaggio non presenta tag html effettuo il parsing di possibili notazioni markdown, altrimenti lo considero gia' parsed
-                if (!msg.matches("(<(.+)*>)*")) {
-
-                    List<String> markers = ParserMarkdown.listMarkers();
-                    //controllo se il msg contiene marker come grassetto, corsivo...
-                    for (int i = 0; i < markers.size(); i++) {
-                        //if(msg.contains(markers.get(i)))
-                        msg = ParserMarkdown.parserStartEndMarker(msg, i);   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
+                //se il messaggio presenta gia' tag html non effettuo il processamento Markdown
+                if (!msg.matches("(.)*(<(.)+>)+(.)*")) {
+                    // lista dei casi di Markdown trovati
+                    List<Integer> matchesParser = ParserMarkdown.selectParser(msg);
+                    // se ci sono casi effettuo i relativi parsing
+                    if(matchesParser.size() > 0) {
+                        for(int i = 0; i < matchesParser.size(); i++) {
+                            msg = ParserMarkdown.parserStartEndMarker(msg, matchesParser.get(i));   //faccio il parsing da markdown al corrispondente html, leggibile dalla textview
+                        }
                     }
                 }
 
-                //scrivo il testo nella textview
+                // controllo versione build
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    // setText del messaggio con formattazione html
                     holder.tvMessaggio.setText(Html.fromHtml(msg, Html.FROM_HTML_MODE_LEGACY));
                 } else {
-                    //rendering html non supportato
+                    //rendering html non supportato, setText del messaggio non formattato
                     holder.tvMessaggio.setText(msg);
                 }
             }

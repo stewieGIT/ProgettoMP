@@ -1,44 +1,45 @@
 package it.qrntine.chatbluetooth.markdown;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /***
- * Classe che consente il riconoscimento di semplici formattazioni markdown, traducendole in tag HTML leggibili
- * in fase di setText della TextView.
+ * Classe che consente il riconoscimento di semplici formattazioni markdown, ed il parsing inserendo
+ * i tag HTML corrispondenti.
  *
- *   Mark supportati:       Markdown:                 HTML:
+ *   Casi supportati:       Markdown:                 HTML:
  *
  *   GRASSETTO              ...**string**...          <b>string</b>
+ *   GRASSETTO              ...__string__...          <b>string</b>
  *   CORSIVO                ...*string*...            <em>string</em>
+ *   CORSIVO                ..._string_...            <em>string</em>
  *   CANCELLATO             ...~string~...            <s>string</s>
- *   HEADER                 #string                   <h1>string</h1>
- *   HEADER+PARAGRAPH       #string.Other             <h1>string</h1><br><p>Other</p>
+ *   HEADER                 # string#other...         <h1>string</h1>other...
  *
  */
-
 public class ParserMarkdown {
 
     /*
-     * REGEX CASI
+     * REGEX CASI DI NOTAZIONI MARKDOWN
      */
-    public static final String regex_bold = "(.+)*((\\*\\*)(.+)(\\*\\*)(.+))*"; // ..**...**..
-    //public static final String splitterCursive = "((\\*?)(.+?)(\\*?))*";  // ..*...*..
-    public static final String regex_cursive = "(.+)*((\\*{1})(.+)(\\*{1}))*";
-    public static final String regex_header = "(.+)*((#)(.+)(#))*";
-    public static final String regex_cancellato = "(.+)*((~)(.+)(~))*";
+    public static final String regexCancellato = "((.)*(~){1}(.)+(~){1}(.)*)+";
+    public static final String regexHeader = "(.)*(#){1}(\\ ){1}[^#]+(#){1}(.)*";
+    public static final String regexEmphasis = "((.)*(\\*){1}(.)+(\\*){1}(.)*)+";
+    public static final String regexEmphasis_ = "((.)*(_){1}(.)+(_){1}(.)*)+";
+    public static final String regexBold = "((.)*(\\*){2}(.)+(\\*){2}(.)*)+";
+    public static final String regexBold_ = "((.)*(_){2}(.)+(_){2}(.)*)+";
+    public static final String regexList = "((.)*(-){1}(.)+(\\n))+";
 
     /*
-     * REGEX MARKERS
+     * MARKERS MARKDOWN
      */
     public static final String markerBold = "\\*\\*";
     public static final String markerEmphasis = "\\*";
-    public static final String markerBold_2 = "__";
-    public static final String markerEmphasis_2 = "_";
+    public static final String markerBold_ = "__";
+    public static final String markerEmphasis_ = "_";
     public static final String markerHeader = "#";
     public static final String markerCancellato = "~";
-    public static final String markerCode = "`";
 
     /*
      * TAG HTML
@@ -55,11 +56,6 @@ public class ParserMarkdown {
     public static final String startTagCancellato = "<s>";
     public static final String endTagCancellato = "</s>";
 
-    public static final String startTagCode = "<code>";
-    public static final String endTagCode = "</code>";
-
-    public static final String newLineHtml = "<br>";
-
 
     /***
      * Effettua il parsing di casi markdown in cui i marker sono all'inizio e alla fine della
@@ -71,66 +67,60 @@ public class ParserMarkdown {
 
         //System.out.println("Messaggio inserito: \n" + msg);
 
-        String msgParsato = "";
-        String[] lista;
+        String msgParsato = ""; // inizializzo msg di output
+        String[] lista;         // usata per il processamento
 
-        String startTag;
-        String endTag;
-        String strRegex;
+        String startTag;    // tag html di apertura
+        String endTag;      // tag html di chiusura
+        String strMarker;    // marker
 
+        // settaggio variabili in base alla tipologia
         switch (caso) {
 
             case 0:
                 //caso header
                 startTag = startTagHeader;
-                endTag = endTagHeader + newLineHtml;  // titolo e a capo
-                strRegex = markerHeader;
+                endTag = endTagHeader;
+                strMarker = markerHeader;
                 break;
 
             case 1:
                 //caso bold
                 startTag = startTagBold;
                 endTag = endTagBold;
-                strRegex = markerBold;
+                strMarker = markerBold;
                 break;
 
             case 2:
                 //caso corsivo
                 startTag = startTagEmphasis;
                 endTag = endTagEmphasis;
-                strRegex = markerEmphasis;
+                strMarker = markerEmphasis;
                 break;
 
             case 3:
                 //caso cancellato
                 startTag = startTagCancellato;
                 endTag = endTagCancellato;
-                strRegex = markerCancellato;
+                strMarker = markerCancellato;
                 break;
 
             case 4:
-                //caso bold versione 2
+                //caso bold versione __
                 startTag = startTagBold;
                 endTag = endTagBold;
-                strRegex = markerBold_2;
+                strMarker = markerBold_;
                 break;
 
             case 5:
-                //caso corsivo versione 2
+                //caso corsivo versione _
                 startTag = startTagEmphasis;
                 endTag = endTagEmphasis;
-                strRegex = markerEmphasis_2;
-                break;
-
-            case 6:
-                //caso code
-                startTag = startTagCode;
-                endTag = endTagCode;
-                strRegex = markerCode;
+                strMarker = markerEmphasis_;
                 break;
 
                 /*
-                E' possibile inserire nuovi casi relativi ad altri tag
+                E' possibile inserire nuovi casi relativi ad altri casi di wrap
                  */
 
             default:
@@ -139,7 +129,8 @@ public class ParserMarkdown {
 
         }
 
-        lista = (msg+" ").split(strRegex);	//ho aggiunto lo spazio " " altrimenti non riconosce l'ultimo nei casi col ** alla fine (e.g. "prova ancora **si** o **no**")
+        // inizio del parsing
+        lista = (msg+" ").split(strMarker);	//aggiunto lo spazio per riconoscere casi di marker a fine stringa, che lo split invaliderebbe (e.g. "prova ancora **si** o **no**")
 
         // CASO SOTTOSTRINGHE DISPARI
         if((lista.length % 2) != 0) {	//se ottengo un numero dispari di sottostringhe, metto il tag bold prima e dopo ogni sottostringa pari
@@ -172,31 +163,24 @@ public class ParserMarkdown {
         } // END CASO SOTTOSTRINGHE PARI
 
         //System.out.println("Messaggio parsato:  \n" + msgParsato);
-
         return msgParsato;
 
     }
 
 
-    public static List<String> listMarkers() {
-        return Arrays.asList(markerHeader, markerBold, markerEmphasis, markerCancellato, markerBold_2, markerEmphasis_2, markerCode);
-    }
-
-
     /***
-     * (PREDISPOSIZIONE)
-     * Indica quale regex viene riscontrata, quindi quale parser applicare
+     * Ritorna una lista con gli indici di quali casi di notazione Markdown sono stati individuati,
+     * da utilizzare nel metodo parser.
      * @param msg
-     * @return int
+     * @return matchCasesList
      */
-    public static int selectParser(String msg) {
-
-        String[] splitters = {regex_bold, regex_cursive, regex_header};
-        for (int i=0; i<splitters.length; i++) {
-            Pattern pattern = Pattern.compile(splitters[i]);
-            if (pattern.matcher(msg).matches()) return i;
+    public static List<Integer> selectParser(String msg) {
+        List<String> regexList = Arrays.asList(regexHeader, regexBold, regexEmphasis, regexCancellato, regexBold_, regexEmphasis_);
+        List<Integer> matchCasesList = new ArrayList<>();
+        for (int i=0; i<regexList.size(); i++) {
+            if (msg.matches(regexList.get(i))) matchCasesList.add(i);
         }
-        return 0;
-
+        return matchCasesList;
     }
+
 }
