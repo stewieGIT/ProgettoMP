@@ -102,11 +102,11 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
                         }
                     }
                     selectedChats.clear(); //puliamo l'array
-                    Toast.makeText(ChatListActivity.this, getString(R.string.chat_deleted), Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChatListActivity.this, getString(R.string.chat_deleted), Toast.LENGTH_SHORT).show();
                     holder.rvChatList.getAdapter().notifyDataSetChanged();
                 }
                 else{
-                    Toast.makeText(ChatListActivity.this, getString(R.string.no_chat_to_delete), Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChatListActivity.this, getString(R.string.no_chat_to_delete), Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -121,11 +121,11 @@ public class ChatListActivity extends AppCompatActivity implements MenuItem.OnMe
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(ChatListActivity.this, getString(R.string.chats_deleted), Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChatListActivity.this, getString(R.string.chats_deleted), Toast.LENGTH_SHORT).show();
                     holder.rvChatList.getAdapter().notifyDataSetChanged();
                 }
             else{
-                Toast.makeText(ChatListActivity.this, getString(R.string.no_chat_to_delete), Toast.LENGTH_LONG).show();
+                Toast.makeText(ChatListActivity.this, getString(R.string.no_chat_to_delete), Toast.LENGTH_SHORT).show();
                 }
             }
         holder.deleteItem.setVisible(false);

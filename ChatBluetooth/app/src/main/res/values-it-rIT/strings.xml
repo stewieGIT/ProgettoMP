@@ -28,4 +28,5 @@
     <string name="about_us">Chi siamo</string>
     <string name="Cerca_msg">Cerca Messaggio</string>
     <string name="le_tue_conversazioni">Le tue chat:</string>
+    <string name="messages_deleted">Messaggi eliminati</string>
 </resources>

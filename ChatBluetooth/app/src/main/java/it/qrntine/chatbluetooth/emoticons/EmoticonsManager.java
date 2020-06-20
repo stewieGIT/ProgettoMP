@@ -18,22 +18,22 @@ public class EmoticonsManager {
     /*
     Keywords per emoticons
      */
-    public static final String emSmile = ":smile:";
-    public static final String emVirus = ":virus:";
-    public static final String emDrago = ":drago:";
-    public static final String emRosa = ":rosa:";
-    public static final String emBowling = ":bowling:";
-    public static final String emFiore = ":fiore:";
-    public static final String emScimmia = ":scimmia:";
-    public static final String emFoglie = ":foglia:";
-    public static final String emLeone = ":leone:";
-    public static final String emPappagallo = ":pappagallo:";
-    public static final String emRana = ":rana:";
-    public static final String emTigre = ":tigre:";
-    public static final String emRugby = ":rugby:";
-    public static final String emMaple = ":maple:";
-    public static final String emAlbero = ":albero:";
-    public static final String emCactus = ":cactus:";
+    private static final String emSmile = ":smile:";
+    private static final String emVirus = ":virus:";
+    private static final String emDrago = ":drago:";
+    private static final String emRosa = ":rosa:";
+    private static final String emBowling = ":bowling:";
+    private static final String emFiore = ":fiore:";
+    private static final String emScimmia = ":scimmia:";
+    private static final String emFoglie = ":foglia:";
+    private static final String emLeone = ":leone:";
+    private static final String emPappagallo = ":pappagallo:";
+    private static final String emRana = ":rana:";
+    private static final String emTigre = ":tigre:";
+    private static final String emRugby = ":rugby:";
+    private static final String emMaple = ":maple:";
+    private static final String emAlbero = ":albero:";
+    private static final String emCactus = ":cactus:";
 
     /*
     Ritorna la risorsa drawable relativa alla keyword, altrimenti NULL se la keyword non esiste

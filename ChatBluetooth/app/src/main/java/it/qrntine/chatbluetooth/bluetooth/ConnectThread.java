@@ -23,7 +23,6 @@ public class ConnectThread extends Thread {
 
 
     public ConnectThread(BluetoothDevice device, boolean secure, BluetoothAdapter mAdapter, BluetoothChatService mBluetoothChatService ) {
-        //System.out.println("*********************ConnectThread ENTRO IN COSTRUTTORE");
         mmDevice = device;
         BluetoothSocket tmp = null;
         mSocketType = secure ? "Secure" : "Insecure";
@@ -49,7 +48,6 @@ public class ConnectThread extends Thread {
     }
 
     public void run() {
-        //System.out.println("*********************ConnectThread ENTRO IN RUN");
         Log.i(Constants.TAG_CONNECT_THREAD, "BEGIN mConnectThread SocketType:" + mSocketType);
         setName("ConnectThread" + mSocketType);
 
@@ -86,7 +84,6 @@ public class ConnectThread extends Thread {
     }
 
     public void cancel () {
-        //System.out.println("*********************ConnectThread ENTRO IN CANCEL");
         try {
             mmSocket.close();
         } catch (IOException e) {

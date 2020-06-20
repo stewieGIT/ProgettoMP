@@ -175,15 +175,16 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                         }
                         messaggi.remove(messaggio);
                     }
+                    if(selectedMessages.size()>1) Toast.makeText(ChatActivity.this, getString(R.string.messages_deleted), Toast.LENGTH_SHORT).show();
+                    else Toast.makeText(ChatActivity.this, getString(R.string.message_deleted), Toast.LENGTH_SHORT).show();
                     selectedMessages.clear(); //puliamo l'array
-                    Toast.makeText(ChatActivity.this, getString(R.string.message_deleted), Toast.LENGTH_LONG).show();
                     holder.rvChat.getAdapter().notifyDataSetChanged();
                 }
                 else{
-                    Toast.makeText(ChatActivity.this, getString(R.string.no_message_to_delete), Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChatActivity.this, getString(R.string.no_message_to_delete), Toast.LENGTH_SHORT).show();
                 }
             }
-            //holder.deleteItem.setVisible(false);
+            holder.deleteItem.setVisible(false);
         }
 
         return false;
@@ -326,11 +327,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                 if (modCriptata) {
                     holder.ivModCriptata.setImageResource(R.drawable.ic_aes);
                     msg="Crittografia AES attivata.";
-                    Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_SHORT).show();
                 } else {
                     holder.ivModCriptata.setImageResource(R.drawable.ic_no_aes);
                     msg="Crittografia AES disattivata.";
-                    Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChatActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -415,14 +416,9 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                     }
                 }
 
-                // controllo versione build
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     // setText del messaggio con formattazione html
                     holder.tvMessaggio.setText(Html.fromHtml(msg, Html.FROM_HTML_MODE_LEGACY));
-                } else {
-                    //rendering html non supportato, setText del messaggio non formattato
-                    holder.tvMessaggio.setText(msg);
-                }
+
             }
 
             //scrivo l'ora del messaggio nella textview
@@ -455,7 +451,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
         @Override
         public void onClick(View v) {
-            int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
             if(selectedMessages.size() > 0) onLongClick(v);
         }
 
@@ -464,11 +459,11 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
             int position = ((RecyclerView) v.getParent()).getChildAdapterPosition(v);
             if(!checkExistance(dati.get(position), selectedMessages)){ //se l'elemento non esiste aggiungilo
                 selectedMessages.add(dati.get(position));
-                //holder.deleteItem.setVisible(true);
+                holder.deleteItem.setVisible(true);
                 //Toast.makeText(ChatActivity.this, "Selected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
             }else{ //altrimenti no
-                //holder.deleteItem.setVisible(false);
+                holder.deleteItem.setVisible(false);
                 selectedMessages.remove(dati.get(position));
                 //Toast.makeText(ChatActivity.this, "Unselected Chat", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
@@ -501,7 +496,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         holder.searchItem = menu.findItem(R.id.search_menu);
         holder.deleteItem = menu.findItem(R.id.delete_menu);
         holder.deleteItem.setOnMenuItemClickListener(this);
-        //holder.deleteItem.setVisible(false);
+        holder.deleteItem.setVisible(false);
         SearchView searchView = (SearchView) holder.searchItem.getActionView();
         searchView.setQueryHint(getString(R.string.Cerca_msg));
         searchView.setOnQueryTextListener(this);

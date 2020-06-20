@@ -20,11 +20,9 @@ public class InserisciThreadDB implements Runnable {
     @Override
     public void run() {
         while(running){
-            //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Insert Avviato");
             db.messaggioDAO().inserisciMessaggio(messaggio); //inserisci messaggio
             running = false;
         }
-        //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Insert Terminato");
     }
 
     /**

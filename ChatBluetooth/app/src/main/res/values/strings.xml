@@ -24,7 +24,6 @@
     <string name="descr_iv_aes">Attiva_Disattiva AES</string>
     <string name="descr_iv_emoticons" translatable="false">Emoticons</string>
     <string name="menu_delete_all">Cancella tutte le chat</string>
-    <!-- non tradurre altrimenti il db non funziona -->
     <string name="messaggi" translatable="false">messaggi</string>
     <string name="nome_gruppo">Gruppo: QR...ntine</string>
     <string name="about_us">Chi siamo</string>
@@ -33,5 +32,5 @@
     <string name="nome_corso">Corso: Mobile Programming 2020</string>
     <string name="Cerca_msg">Cerca Messaggio</string>
     <string name="le_tue_conversazioni">Le tue chat:</string>
-
+    <string name="messages_deleted">Messaggi eliminati</string>
 </resources>

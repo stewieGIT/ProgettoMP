@@ -2,7 +2,7 @@
 <resources>
     <string name="search">  Scan  </string>
     <string name="btnSend">Send</string>
-    <string name="hint_message">Insert message</string>
+    <string name="hint_message">Type a message</string>
     <string name="menu_chatlist_delete">Delete</string>
     <string name="error_user_disconnected">The user has disconnected</string>
     <string name="inizio_ricerca">Scanning...</string>
@@ -28,4 +28,5 @@
     <string name="about_us">About us</string>
     <string name="Cerca_msg">Search Message</string>
     <string name="le_tue_conversazioni">Your chats:</string>
+    <string name="messages_deleted">Messages deleted</string>
 </resources>

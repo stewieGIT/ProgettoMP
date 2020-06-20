@@ -23,38 +23,38 @@ public class ParserMarkdown {
     /*
      * REGEX CASI DI NOTAZIONI MARKDOWN
      */
-    public static final String regexCancellato = "((.)*(~){1}(.)+(~){1}(.)*)+";
-    public static final String regexHeader = "(.)*(#){1}(\\ ){1}[^#]+(#){1}(.)*";
-    public static final String regexEmphasis = "((.)*(\\*){1}(.)+(\\*){1}(.)*)+";
-    public static final String regexEmphasis_ = "((.)*(_){1}(.)+(_){1}(.)*)+";
-    public static final String regexBold = "((.)*(\\*){2}(.)+(\\*){2}(.)*)+";
-    public static final String regexBold_ = "((.)*(_){2}(.)+(_){2}(.)*)+";
-    public static final String regexList = "((.)*(-){1}(.)+(\\n))+";
+    private static final String regexCancellato = "((.)*(~){1}(.)+(~){1}(.)*)+";
+    private static final String regexHeader = "(.)*(#){1}(\\ ){1}[^#]+(#){1}(.)*";
+    private static final String regexEmphasis = "((.)*(\\*){1}(.)+(\\*){1}(.)*)+";
+    private static final String regexEmphasis_ = "((.)*(_){1}(.)+(_){1}(.)*)+";
+    private static final String regexBold = "((.)*(\\*){2}(.)+(\\*){2}(.)*)+";
+    private static final String regexBold_ = "((.)*(_){2}(.)+(_){2}(.)*)+";
+    //public static final String regexList = "((.)*(-){1}(.)+(\\n))+"; Riconoscimento liste per sviluppi futuri
 
     /*
      * MARKERS MARKDOWN
      */
-    public static final String markerBold = "\\*\\*";
-    public static final String markerEmphasis = "\\*";
-    public static final String markerBold_ = "__";
-    public static final String markerEmphasis_ = "_";
-    public static final String markerHeader = "#";
-    public static final String markerCancellato = "~";
+    private static final String markerBold = "\\*\\*";
+    private static final String markerEmphasis = "\\*";
+    private static final String markerBold_ = "__";
+    private static final String markerEmphasis_ = "_";
+    private static final String markerHeader = "#";
+    private static final String markerCancellato = "~";
 
     /*
      * TAG HTML
      */
-    public static final String startTagBold = "<b>";
-    public static final String endTagBold = "</b>";
+    private static final String startTagBold = "<b>";
+    private static final String endTagBold = "</b>";
 
-    public static final String startTagEmphasis = "<em>";
-    public static final String endTagEmphasis = "</em>";
+    private static final String startTagEmphasis = "<em>";
+    private static final String endTagEmphasis = "</em>";
 
-    public static final String startTagHeader = "<h1>";
-    public static final String endTagHeader = "</h1>";
+    private static final String startTagHeader = "<h1>";
+    private static final String endTagHeader = "</h1>";
 
-    public static final String startTagCancellato = "<s>";
-    public static final String endTagCancellato = "</s>";
+    private static final String startTagCancellato = "<s>";
+    private static final String endTagCancellato = "</s>";
 
 
     /***
@@ -64,8 +64,6 @@ public class ParserMarkdown {
      * @return msgParsato
      */
     public static String parserStartEndMarker(String msg, int caso) {
-
-        //System.out.println("Messaggio inserito: \n" + msg);
 
         String msgParsato = ""; // inizializzo msg di output
         String[] lista;         // usata per il processamento
@@ -161,8 +159,6 @@ public class ParserMarkdown {
             }
 
         } // END CASO SOTTOSTRINGHE PARI
-
-        //System.out.println("Messaggio parsato:  \n" + msgParsato);
         return msgParsato;
 
     }

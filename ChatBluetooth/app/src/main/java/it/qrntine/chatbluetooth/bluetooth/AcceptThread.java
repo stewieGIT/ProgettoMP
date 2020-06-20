@@ -24,7 +24,6 @@ public class AcceptThread extends Thread {
     private final Handler mHandler;
 
     public AcceptThread(boolean secure, BluetoothAdapter mAdapter, Handler mHandler, BluetoothChatService mBluetoothChatService) {
-        //System.out.println("*********************AcceptThread ENTRO IN COSTRUTTORE");
         BluetoothServerSocket tmp = null;
         mSocketType = secure ? "Secure" : "Insecure";
         this.mHandler=mHandler;
@@ -50,7 +49,6 @@ public class AcceptThread extends Thread {
         Log.d(Constants.TAG_ACCEPT_THREAD, "Socket Type: " + mSocketType +
                 "BEGIN mAcceptThread" + this);
         setName("AcceptThread" + mSocketType);
-        //System.out.println("*********************AcceptThread ENTRO IN RUN");
         BluetoothSocket socket = null;
 
         // Listen to the server socket if we're not connected
@@ -98,7 +96,6 @@ public class AcceptThread extends Thread {
 
     public void cancel() {
         Log.d(Constants.TAG_ACCEPT_THREAD, "Socket Type" + mSocketType + "cancel " + this);
-        //System.out.println("*********************AcceptThread ENTRO IN CANCEL");
         try {
             mmServerSocket.close();
         } catch (IOException e) {

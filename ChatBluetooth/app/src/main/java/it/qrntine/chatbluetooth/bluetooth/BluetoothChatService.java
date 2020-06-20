@@ -103,8 +103,6 @@ public class BluetoothChatService {
     public synchronized void connect(BluetoothDevice device, boolean secure) {
         Log.d(Constants.TAG_BlUETOOTH_CHAT_SERVICE, "connect to: " + device);
 
-        //System.out.println("*********************BluetoothChatService ENTRO IN CONNECT");
-
         // Cancel any thread attempting to make a connection
         if (mState == Constants.STATE_CONNECTING) {
             if (mConnectThread != null) {
@@ -135,9 +133,6 @@ public class BluetoothChatService {
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice
             device, final String socketType) {
         Log.d(Constants.TAG_BlUETOOTH_CHAT_SERVICE, "connected, Socket Type:" + socketType);
-
-        //System.out.println("*********************BluetoothChatService ENTRO IN CONNECTED");
-
 
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {
@@ -182,7 +177,6 @@ public class BluetoothChatService {
     public synchronized void stop() {
         Log.d(Constants.TAG_BlUETOOTH_CHAT_SERVICE, "stop");
 
-        //System.out.println("*********************BluetoothChatService ENTRO IN STOP");
 
         if (mConnectThread != null) {
             mConnectThread.cancel();
@@ -213,8 +207,6 @@ public class BluetoothChatService {
      */
     public void connectionFailed() {
 
-        //System.out.println("*********************BluetoothChatService ENTRO IN CONNECTIONFAILED");
-
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
@@ -234,7 +226,6 @@ public class BluetoothChatService {
      * Indicate that the connection was lost and notify the UI Activity.
      */
     public void connectionLost() {
-        //System.out.println("*********************BluetoothChatService ENTRO IN CONNECTIONLOST");
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();

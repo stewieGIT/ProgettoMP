@@ -27,7 +27,7 @@ public class ConnectedThread extends Thread {
     private Handler mHandler;
 
     public ConnectedThread(BluetoothSocket socket, String socketType, BluetoothAdapter mAdapter, BluetoothChatService mBluetoothChatService, Handler mHandler) {
-        //System.out.println("*********************Connected_Thread ENTRO IN COSTRUTTORE");
+
         Log.d(Constants.TAG_CONNECTED_THREAD, "create ConnectedThread: " + socketType);
         mmSocket = socket;
         InputStream tmpIn = null;
@@ -49,7 +49,6 @@ public class ConnectedThread extends Thread {
     }
 
     public void run() {
-        //System.out.println("*********************Connected_Thread ENTRO IN RUN");
         Log.i(Constants.TAG_CONNECTED_THREAD, "BEGIN mConnectedThread");
 
         // Keep listening to the InputStream while connected
@@ -65,10 +64,10 @@ public class ConnectedThread extends Thread {
                         else mHandler.obtainMessage(Constants.MESSAGE_OBJECT_READ, obj).sendToTarget(); //altrimenti è cod.
                     }
                 }catch(IOException e1){
-                    //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>IOEXCEPTION READOBJECT");
                     mHandler.sendEmptyMessage(Constants.MESSAGE_OBJECT_ERROR_READ);
+                    e1.printStackTrace();
                 }catch(ClassNotFoundException e2){
-                    //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>CLASSNOTFOUND READOBJECT");
+                    e2.printStackTrace();
                 }
         }
     }
@@ -87,12 +86,11 @@ public class ConnectedThread extends Thread {
             }
             else mHandler.obtainMessage(Constants.MESSAGE_OBJECT_WRITE, msg).sendToTarget(); //altrimenti è codificato
         }catch(IOException e){
-            //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>IOEXCEPTION WRITEOBJECT");
+            e.printStackTrace();
         }
     }
 
     public void cancel() {
-        //System.out.println("*********************Connected_Thread ENTRO IN CANCEL");
         try {
             mmSocket.close();
         } catch (IOException e) {
