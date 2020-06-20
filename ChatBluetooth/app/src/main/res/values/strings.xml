@@ -31,6 +31,7 @@
     <string name="membri_gruppo">Membri: Bramucci Adriano, Conti Matteo, Mazzetti Massimo, Picchioni Stefano</string>
     <string name="nome_progetto">Progetto: Chat Bluetooth</string>
     <string name="nome_corso">Corso: Mobile Programming 2020</string>
-
+    <string name="Cerca_msg">Cerca Messaggio</string>
+    <string name="le_tue_conversazioni">Le tue chat:</string>
 
 </resources>

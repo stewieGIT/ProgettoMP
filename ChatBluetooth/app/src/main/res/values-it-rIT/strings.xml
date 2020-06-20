@@ -26,4 +26,6 @@
     <string name="nome_progetto">Progetto: Chat Bluetooth</string>
     <string name="nome_corso">Corso: Mobile Programming 2020</string>
     <string name="about_us">Chi siamo</string>
+    <string name="Cerca_msg">Cerca Messaggio</string>
+    <string name="le_tue_conversazioni">Le tue chat:</string>
 </resources>

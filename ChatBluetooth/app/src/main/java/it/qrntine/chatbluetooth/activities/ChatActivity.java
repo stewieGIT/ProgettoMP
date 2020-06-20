@@ -503,7 +503,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
         holder.deleteItem.setOnMenuItemClickListener(this);
         //holder.deleteItem.setVisible(false);
         SearchView searchView = (SearchView) holder.searchItem.getActionView();
-        searchView.setQueryHint("Search Message");
+        searchView.setQueryHint(getString(R.string.Cerca_msg));
         searchView.setOnQueryTextListener(this);
         return true;
     }
