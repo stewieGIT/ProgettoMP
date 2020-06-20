@@ -338,7 +338,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                 // Rendo invisibile relative layout di inserimento messaggi
                 hideKeyboard(ChatActivity.this);
                 holder.rlInsertMessage.setVisibility(View.INVISIBLE);
-                Intent intent = new Intent(ChatActivity.this, PopUpActivity.class);
+                Intent intent = new Intent(ChatActivity.this, EmoticonsActivity.class);
                 //passare context per prelevare immagini da assets
                 startActivityForResult(intent, REQCODE_POPUP_ACTIVITY);
             }

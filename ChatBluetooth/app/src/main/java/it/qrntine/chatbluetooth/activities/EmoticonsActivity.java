@@ -13,7 +13,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,7 +24,7 @@ import java.util.List;
 import it.qrntine.chatbluetooth.R;
 import it.qrntine.chatbluetooth.emoticons.EmoticonsManager;
 
-public class PopUpActivity extends Activity {
+public class EmoticonsActivity extends Activity {
 
     List<String> listaEmoji;
 
@@ -34,6 +33,7 @@ public class PopUpActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pop);
 
+        // dimensionamento activity
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int height = dm.heightPixels;
@@ -56,7 +56,7 @@ public class PopUpActivity extends Activity {
         Holder() {
             rvEmoji = findViewById(R.id.rvEmoji2);
             listaEmoji = EmoticonsManager.listKeywords();
-            RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(PopUpActivity.this, LinearLayoutManager.HORIZONTAL, false);
+            RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(EmoticonsActivity.this, LinearLayoutManager.HORIZONTAL, false);
             rvEmoji.setLayoutManager(layoutManager);
             RecyclerView.Adapter emojiRvAdapter = new EmojiRvAdapter(listaEmoji);
             rvEmoji.setAdapter(emojiRvAdapter);
@@ -87,7 +87,7 @@ public class PopUpActivity extends Activity {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             ImageView iv = holder.ivEmoji;
             try {
-                iv.setImageDrawable(EmoticonsManager.selectEmojiByKeyword(listaDrawablesInt.get(position), PopUpActivity.this));
+                iv.setImageDrawable(EmoticonsManager.selectEmojiByKeyword(listaDrawablesInt.get(position), EmoticonsActivity.this));
             } catch (IOException e) {
                 e.printStackTrace();
             }

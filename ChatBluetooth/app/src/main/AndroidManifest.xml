@@ -23,7 +23,7 @@
         </activity>
         <activity android:name=".activities.ChatListActivity"/>
         <activity android:name=".activities.ChatActivity"/>
-        <activity android:name=".activities.PopUpActivity"
+        <activity android:name=".activities.EmoticonsActivity"
             android:theme="@style/AppTheme.Popup"/>
         <activity android:name=".activities.AboutUsActivity"/>
     </application>
