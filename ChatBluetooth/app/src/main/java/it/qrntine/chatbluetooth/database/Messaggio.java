@@ -4,10 +4,6 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import java.util.Date;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 
 @Entity
 public class Messaggio {
@@ -28,9 +24,6 @@ public class Messaggio {
 
     @ColumnInfo(name="Destinatario")
     public String destinatario;
-
-    @ColumnInfo(name="Nome_destinatario")
-    public String nome_destinatario;
 
     public Messaggio(){}
 

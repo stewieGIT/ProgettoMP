@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">ChatBluetooth</string>
+    <string name="app_name" translatable="false">ChatBluetooth</string>
     <string name="search">  Ricerca  </string>
-    <string name="chat">  Chat  </string>
+    <string name="chat" translatable="false">  Chat  </string>
     <string name="btnSend">Invia</string>
     <string name="hint_message">Inserisci messaggio</string>
     <string name="menu_chatlist_delete">Elimina</string>
@@ -9,7 +9,7 @@
     <string name="inizio_ricerca">Ricerca...</string>
     <string name="fine_ricerca">Ricerca completata</string>
     <string name="stop_ricerca">Ricerca interrotta</string>
-    <string name="main_title">Bluetooth chat</string>
+    <string name="main_title" translatable="false">Bluetooth chat</string>
     <string name="chat_list">Lista chat</string>
     <string name="connessione">Connessione...</string>
     <string name="risultati_ricerca">Risultati ricerca:</string>
@@ -22,7 +22,7 @@
     <string name="no_message_to_delete">Non ci sono messaggi da eliminare</string>
     <string name="descr_iv_invia_messaggio">Invia messaggio</string>
     <string name="descr_iv_aes">Attiva_Disattiva AES</string>
-    <string name="descr_iv_emoticons">Emoticons</string>
+    <string name="descr_iv_emoticons" translatable="false">Emoticons</string>
     <string name="menu_delete_all">Cancella tutte le chat</string>
     <!-- non tradurre altrimenti il db non funziona -->
     <string name="messaggi" translatable="false">messaggi</string>
