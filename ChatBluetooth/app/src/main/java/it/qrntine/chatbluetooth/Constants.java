@@ -44,4 +44,9 @@ public final class Constants {
     public static final int ACTIVITY_CHATLIST = 1;
     public static final int ACTIVITY_CHAT = 2;
     public static final int RV_HEIGHT=10;
+
+    //permission constants
+    public static final int REQUEST_PERM_ACL=101;
+    public static final int REQUEST_PERM_AFL=102;
+
 }

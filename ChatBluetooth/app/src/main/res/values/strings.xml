@@ -25,7 +25,7 @@
     <string name="descr_iv_emoticons">Emoticons</string>
     <string name="menu_delete_all">Cancella tutte le chat</string>
     <!-- non tradurre altrimenti il db non funziona -->
-    <string name="messaggi">messaggi</string>
+    <string name="messaggi" translatable="false">messaggi</string>
     <string name="nome_gruppo">Gruppo: QR...ntine</string>
     <string name="about_us" translatable="false">About Us</string>
     <string name="membri_gruppo">Membri: Bramucci Adriano, Conti Matteo, Mazzetti Massimo, Picchioni Stefano</string>

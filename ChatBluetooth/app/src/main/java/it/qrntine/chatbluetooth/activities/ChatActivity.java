@@ -161,11 +161,8 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if(item.getItemId() == R.id.delete_menu){
-            //out.println("*************SONO NELLA ONMENUITEMCLICK");
             if(selectedMessages != null){
-                //System.out.println("*************SELMESSAGES NOT NULL");
                 if(selectedMessages.size() > 0){ //se esistono elementi selezionati cancelliamo le chat selezionate
-                    //System.out.println("*************SELSIZE>0");
                     for(Messaggio messaggio: selectedMessages){
                         CancellaMessaggiThreadDB can = new CancellaMessaggiThreadDB(db, selectedMessages);
                         Thread cancella = new Thread(can);
@@ -176,7 +173,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        //System.out.println("*************MESSAGEREMOVE"+ messaggio.testo);
                         messaggi.remove(messaggio);
                     }
                     selectedMessages.clear(); //puliamo l'array
@@ -314,12 +310,10 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                     if (modCriptata) {
                         codifica = new CodificaAES();
                         MetaMessaggio metaMessaggio = codifica.codificaMessaggio(messaggioInserito);
-                        //System.out.println(">>>>>>>>>>>>>>>>>>>>MSG CRYPTED: " + metaMessaggio);
                         session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
                     } else {
                         MetaMessaggio metaMessaggio = new MetaMessaggio();
                         metaMessaggio.setTesto(messaggioInserito.getBytes());
-                        //System.out.println(">>>>>>>>>>>>>>>>>>>>MSG UNCRYPTED: " + metaMessaggio);
                         session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
                     }
                     etInserisciMessaggio.setText("");
@@ -364,10 +358,7 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                     String kwEmoji = data.getStringExtra("kwEmoji");
                     MetaMessaggio metaMessaggio = new MetaMessaggio();
                     metaMessaggio.setTesto(kwEmoji.getBytes());
-                    //System.out.println(">>>>>>>>>>>>>>>>>>>>MSG UNCRYPTED: " + metaMessaggio);
                     session.getmBluetoothChatService().getmConnectedThread().writeObject(metaMessaggio);
-                } else {
-                    System.out.println("Nessuna emoji selezionata");
                 }
                 break;
         }
@@ -381,7 +372,6 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
 
         public ChatBluetoothAdapter(List <Messaggio> dati) {
             this.dati = dati;
-            //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + dati);
         }
 
         @NonNull
@@ -442,11 +432,9 @@ public class ChatActivity extends AppCompatActivity implements SearchView.OnQuer
                 if (dati.get(position).mittente.equals(BluetoothAdapter.getDefaultAdapter().getAddress())) {
                     holder.cvChat.setCardBackgroundColor(getColor(R.color.colorMittente));
                     holder.rlChat.setGravity(Gravity.RIGHT); //se sei il mittente i messaggi sono visualizzati a destra
-                    //System.out.println("DESTRA");
                 } else {
                     holder.cvChat.setCardBackgroundColor(getColor(R.color.colorDestinatario));
                     holder.rlChat.setGravity(Gravity.LEFT); //altrimenti a sinistra
-                    //System.out.println("SINISTRA");
                 }
             }
             if(checkExistance(dati.get(position), selectedMessages)){ //se esiste nell'array selezionati evidenzialo

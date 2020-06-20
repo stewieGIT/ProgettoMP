@@ -58,27 +58,7 @@ public class MainActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         session.setCurrentActivity(Constants.ACTIVITY_MAIN);
         setTitle(getString(R.string.main_title));
 
-        final int REQUEST_CODE = 101;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // controllo se il permesso NON sia stato gia' dato
-            if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // richiedo il permesso
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_CODE);
-            }
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // richiedo il permesso
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
-            }
-            // ********* i prossimi due non dovrebbero essere necessari
-            if (checkSelfPermission(Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
-                // richiedo il permesso
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH}, REQUEST_CODE);
-            }
-            if (checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
-                // richiedo il permesso
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, REQUEST_CODE);
-            }
-        }  //  END VERIFICA PERMESSI
+        reqPermessi();
 
         //HANDLER SETUP
           mHandler = new Handler(new Handler.Callback() {
@@ -124,6 +104,22 @@ public class MainActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         session.getmBluetoothChatService().start();
 
         holder = new Holder();
+    }
+
+    //onResult Permessi
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case Constants.REQUEST_PERM_ACL:
+
+            case Constants.REQUEST_PERM_AFL:
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    showToast("Per la funzione di ricerca è necessario consentire l'accesso alla posizione del dispositivo.");
+                }
+                break;
+        }
     }
 
     @Override
@@ -185,6 +181,10 @@ public class MainActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         public void onClick(View v) {
             switch (v.getId()) {
                 case (R.id.btnAvviaRicerca):
+                    if(!checkPermessi()) {
+                        reqPermessi();
+                        break;
+                    }
                     if (BluetoothAdapter.getDefaultAdapter().isDiscovering()) {
                         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
                         //showToast(getString(R.string.stop_ricerca));
@@ -317,4 +317,30 @@ public class MainActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
+
+    //richiesta permessi
+    public void reqPermessi() {
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Constants.REQUEST_PERM_ACL);
+        }
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.REQUEST_PERM_AFL);
+        }
+
+    }
+
+    //controllo permessi
+    public boolean checkPermessi() {
+        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return false;
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return false;
+
+        return true;
+    }
+
+
 }
